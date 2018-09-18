@@ -1,0 +1,92 @@
+Version 2.4.3: Sep 18, 2018
+ - moved code from subversion to github
+
+Version 2.4.2: Mar 2, 2018
+ - added generation of inferred ISO annotations for RAT from manual chinchilla GO annotations
+
+Version 2.4.1: Mar 1, 2018
+ - added processing of GO annotations for DOG
+
+Version 2.4.0: Feb 28, 2018
+ - substantial logic upgrade:
+   1) for given species, multiple database sources could be processed (previously only 1 source was allowed)
+   2) duplicate annotations are merged by combining their XREF_SOURCE and NOTES fields
+   3) NOTES field is set only to information that does not appear in XREF_SOURCE field
+
+Version 2.3.6: Feb 12, 2018
+ - tuned up reporting
+
+Version 2.3.5: Jan 23, 2018
+ - delete threshold for stale annotations is set in properties file: currently 5%
+
+Version 2.3.4: Jan 22, 2018
+ - implemented DATA_SRC conversion for incoming data: 'UniProt' -> 'UniProtKB'
+ - implemented 5% delete threshold for stale annotations
+
+Version 2.3.3: Jul 10, 2017
+ - disabled automatic refresh of CREATED_DATE fields for IEA annotations older than 9 months
+   per RGDD-1194, annotation created date should never be adjusted, because it messes up with the notification system
+
+Version 2.3.2: Jul 3, 2017
+ - upgraded from ANT to GRADLE
+ - implemented automatic refresh of CREATED_DATE fields for IEA annotations older than 9 months
+
+ Version 2.3.1: Feb 8, 2017
+ - enhanced QC in the matcher: fixed issues with creating annotations for wrong species -- per RGDD-1347
+
+Version 2.3.0: Jan 16, 2017
+  - changed data source for human (remote dir ftp://ftp.geneontology.org/pub/go/gene-associations/):
+    OLD: gene_association.goa_human.gz
+    NEW: goa_human.gaf.gz
+        +goa_human_complex.gaf.gz
+        +goa_human_isoform.gaf.gz
+        +goa_human_rna.gaf.gz
+
+Version 2.2.8: May 13, 2016
+  - new annotations: creation date is no longer read from incoming data, but it is set to current machine timestamp
+    this is done to make myRgd annotation watcher work correctly
+
+Version 2.2.7: Jan 26, 2016
+  - code refactoring for logging (exclusive use of log4j) and DAO (better reuse of rgdcore)
+
+Version 2.2.6: Oct 21, 2015
+  - improved handling of FULL_ANNOT updates
+
+Version 2.2.5: Sep 28, 2015
+  - skipping self-referencing annotations
+
+Version 2.2.4: Jan 7, 2015
+  - refactored code, updated jars, added logging of deleted annotations
+
+Version 2.2.3: Jul 11, 2014
+  - annotations skipped for IPI annotations to catalytic activity terms
+
+Version 2.2.2: Jun 23, 2014
+  - annotations skipped for top-level GO terms (having synonym 'Not4Curation')
+
+Version 2.2.1: Jun 18, 2014
+  - updated rgdcore.jar; annotations are skipped for top level GO terms, as specified in
+    http://www.geneontology.org/GO.annotation_qc.shtml#GO_AR:0000008
+
+Version 2.2.0: Apr 21, 2014
+  - updated rgdcore.jar; CREATED_DATE updated in addition to LAST_MODIFIED_DATE - per RGDD-913
+
+Version 2.1.3: Dec 28, 2012
+  - updated rgdcore.jar: unique index on FULL_ANNOT table no longer has fields TERm and EXP_RGD_ID    - per RGDD-555
+
+Version 2.1.2: Nov 30, 2012
+  - moved code to download input files from shell script into java
+
+Version 2.1.1: August 7, 2012
+  - fixed log4j script and cron script
+  - if incoming GO term is not found in RGD, it will be reported and the pipeline won't break
+  - fixed logic for not processing all annotations
+
+Version 2.1: June 25, 2012
+  - refactored code to reuse as much dao code from rgdcore as possible
+  - enabled caching and parallelization to improve significantly pipeline throughput
+  - changed model from 'drop and reload' to 'incremental update' to significantly improve performance
+
+Version 2.0: June 12, 2012
+  - moved hard-coded parameters for pipeline into AppConfigure.xml file
+  - refactored code to use RGDManagementDAO from rgdcore to handle rgd id history

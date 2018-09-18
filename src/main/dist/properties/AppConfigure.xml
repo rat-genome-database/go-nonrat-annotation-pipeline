@@ -1,0 +1,82 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="loader" class="edu.mcw.rgd.MouseAndHumanGoAnnotationPipeline">
+        <property name="version" value="MouseAndHumanGoAnnotationPipeline, v 2.4.3, build Sep 18, 2018" />
+        <property name="remoteDir" value="ftp://ftp.geneontology.org/pub/go/gene-associations/"/>
+        <property name="localDir" value="data/"/>
+
+        <property name="mgiFiles">
+            <list>
+                <value>gene_association.mgi.gz</value>
+            </list>
+        </property>
+        <property name="goaMouseDbSources">
+            <list>
+                <value>MGI</value>
+            </list>
+        </property>
+
+        <property name="goaHumanFiles">
+            <list>
+                <value>goa_human.gaf.gz</value>
+                <value>goa_human_complex.gaf.gz</value>
+                <value>goa_human_isoform.gaf.gz</value>
+                <value>goa_human_rna.gaf.gz</value>
+            </list>
+        </property>
+        <property name="goaHumanDbSources">
+            <list>
+                <value>UniProt</value>
+                <value>HGNC</value>
+                <value>Ensembl</value>
+            </list>
+        </property>
+
+        <property name="goaDogFiles">
+            <list>
+                <value>goa_dog.gaf.gz</value>
+                <value>goa_dog_complex.gaf.gz</value>
+                <value>goa_dog_isoform.gaf.gz</value>
+                <value>goa_dog_rna.gaf.gz</value>
+            </list>
+        </property>
+        <property name="goaDogDbSources">
+            <list>
+                <value>UniProt</value>
+            </list>
+        </property>
+
+        <property name="mgiRefRgdId" value="2290270" />
+        <property name="goaHumanRefRgdId" value="2290271" />
+        <property name="goaDogRefRgdId" value="13508589" />
+        <property name="issRefRgdId" value="1624291" />
+        <property name="createdBy" value="190" />
+        <property name="pipelineQueueSize" value="6000" />
+        <property name="qcThreadCount" value="8" />
+        <property name="staleAnnotDeleteThreshold" value="5%" />
+
+        <property name="parser" ref="parser" />
+        <property name="qc" ref="qc" />
+    </bean>
+
+    <bean id="parser" class="edu.mcw.rgd.MAHParser">
+    </bean>
+
+    <bean id="qc" class="edu.mcw.rgd.MAHQC">
+        <property name="sourceSubst">
+            <map>
+                <entry key="UniProtKB" value="UniProt" />
+            </map>
+        </property>
+        <property name="evidenceCodesToMakeRatAnnots">
+            <set>
+                <value>EXP</value>
+                <value>IDA</value>
+                <value>IEP</value>
+                <value>IGI</value>
+                <value>IMP</value>
+                <value>IPI</value>
+            </set>
+        </property>
+    </bean>
+</beans>
