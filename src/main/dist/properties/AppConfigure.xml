@@ -26,7 +26,7 @@
         </property>
         <property name="goaHumanDbSources">
             <list>
-                <value>UniProt</value>
+                <value>UniProtKB</value>
                 <value>HGNC</value>
                 <value>Ensembl</value>
             </list>
@@ -42,7 +42,7 @@
         </property>
         <property name="goaDogDbSources">
             <list>
-                <value>UniProt</value>
+                <value>UniProtKB</value>
             </list>
         </property>
 
