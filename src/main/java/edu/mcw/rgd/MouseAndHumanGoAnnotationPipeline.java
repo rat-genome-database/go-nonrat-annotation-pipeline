@@ -45,6 +45,7 @@ public class MouseAndHumanGoAnnotationPipeline {
 
     MouseAndHumanGoAnnotationDAO dao = new MouseAndHumanGoAnnotationDAO();
     Map<Integer,String> mapRgdIdStatus;
+    Date pipelineStartTime = new Date();
 
     protected final Logger logStatus = Logger.getLogger("status");
     protected final Logger logException = Logger.getLogger("exception");
@@ -103,8 +104,6 @@ public class MouseAndHumanGoAnnotationPipeline {
 
     public void run() throws Exception{
 
-        Date pipelineStartTime = new Date();
-
         logStatus.info("evidence codes to make inferred rat annotations: "
                 +Utils.concatenate(qc.getEvidenceCodesToMakeRatAnnots(), ", ", "\'"));
 
@@ -117,10 +116,7 @@ public class MouseAndHumanGoAnnotationPipeline {
         downloadAndProcessFiles(getGoaHumanDbSources(), getGoaHumanRefRgdId(), getGoaHumanFiles(), SpeciesType.HUMAN);
         downloadAndProcessFiles(getGoaMouseDbSources(), getMgiRefRgdId(), getMgiFiles(), SpeciesType.MOUSE);
         downloadAndProcessFiles(getGoaDogDbSources(), getGoaDogRefRgdId(), getGoaDogFiles(), SpeciesType.DOG);
-        processFile(null, null, 0, SpeciesType.CHINCHILLA);
-
-        // delete annotations not updated/inserted by the pipeline
-        deleteStaleAnnotations(pipelineStartTime);
+        downloadAndProcessFiles(null, getIssRefRgdId(), null, SpeciesType.CHINCHILLA);
 
         // show current counts
         dumpCountsForRefRgdIds();
@@ -134,11 +130,6 @@ public class MouseAndHumanGoAnnotationPipeline {
         long startTime = pipelineStartTime.getTime();
         long endTime = System.currentTimeMillis();
         logStatus.info("ELAPSED TIME: "+Utils.formatElapsedTime(startTime, endTime));
-    }
-
-    void deleteStaleAnnotations(Date pipelineStartTime) throws Exception {
-        int annotsDeleted = dao.deleteAnnotations(this.getCreatedBy(), pipelineStartTime, logStatus, getStaleAnnotDeleteThreshold());
-        logStatus.info("DELETED OLD ANNOTATIONS "+annotsDeleted);
     }
 
     void dumpStats(PipelineManager manager, int speciesTypeKey) {
@@ -189,15 +180,24 @@ public class MouseAndHumanGoAnnotationPipeline {
         logStatus.info("COUNT REF_RGD_ID:" + getGoaDogRefRgdId() + " " + count_2+"  -- DOG");
 
         int count_ISO = dao.getCountOfAnnotationForRefRgdId(getIssRefRgdId());
-        logStatus.info("COUNT REF_RGD_ID:" + getIssRefRgdId() + " " + count_ISO+"  -- ISO");
+        logStatus.info("COUNT REF_RGD_ID:" + getIssRefRgdId() + " " + count_ISO+"  -- RAT ISO, CHINCHILLA DERIVED");
     }
 
     public void downloadAndProcessFiles(List<String> databases, int refRgdId, List<String> fileNames, int speciesTypeKey) throws Exception {
-        List<String> localFiles = new ArrayList<>();
-        for( String fileName: fileNames ) {
-            localFiles.add(downloadFile(fileName));
+        if( fileNames==null ) {
+            // chinchilla
+            processFile(null, null, refRgdId, speciesTypeKey);
+        } else {
+            List<String> localFiles = new ArrayList<>();
+            for (String fileName : fileNames) {
+                localFiles.add(downloadFile(fileName));
+            }
+            processFile(localFiles, databases, refRgdId, speciesTypeKey);
         }
-        processFile(localFiles, databases, refRgdId, speciesTypeKey);
+
+        // delete annotations not updated/inserted by the pipeline
+        int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), pipelineStartTime, logStatus, getStaleAnnotDeleteThreshold(), refRgdId);
+        logStatus.info("DELETED OLD ANNOTATIONS "+annotsDeleted);
     }
 
     String downloadFile(String file) throws Exception {

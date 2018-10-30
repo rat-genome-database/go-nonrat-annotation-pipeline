@@ -1,3 +1,6 @@
+Version 2.4.4: Oct 30, 2018
+ - stale annotations are now processed by species, to be more informative
+
 Version 2.4.3: Sep 18, 2018
  - moved code from subversion to github
 

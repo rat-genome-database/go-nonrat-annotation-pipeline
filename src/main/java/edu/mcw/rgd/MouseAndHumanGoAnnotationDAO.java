@@ -157,16 +157,18 @@ public class MouseAndHumanGoAnnotationDAO  {
      * @return number of rows affected
      * @throws Exception on spring framework dao failure
      */
-    public int deleteAnnotations(int createdBy, Date dt, Logger logStatus, String deleteThresholdStr) throws Exception{
+    public int deleteAnnotations(int createdBy, Date dt, Logger logStatus, String deleteThresholdStr, int refRgdId) throws Exception{
 
         // extract delete threshold in percent
         int percentPos = deleteThresholdStr.indexOf('%');
         int deleteThreshold = Integer.parseInt(deleteThresholdStr.substring(0, percentPos));
 
-        int currentAnnotCount = annotationDAO.getCountOfAnnotationsForCreatedBy(createdBy);
-        List<Annotation> annotsForDelete = annotationDAO.getAnnotationsModifiedBeforeTimestamp(createdBy, dt);
+        int currentAnnotCount = annotationDAO.getCountOfAnnotationsByReference(refRgdId);
+        List<Annotation> annotsForDelete = annotationDAO.getAnnotationsModifiedBeforeTimestamp(createdBy, dt, refRgdId);
+        List<Integer> fullAnnotKeys = new ArrayList<>(annotsForDelete.size());
         for( Annotation a: annotsForDelete ) {
             logDelete.info(a.dump("|"));
+            fullAnnotKeys.add(a.getKey());
         }
         int annotsForDeleteCount = annotsForDelete.size();
         int annotsForDeleteThreshold = (deleteThreshold * currentAnnotCount) / 100; // 5% delete threshold
@@ -176,7 +178,7 @@ public class MouseAndHumanGoAnnotationDAO  {
             logStatus.warn(" STALE ANNOTATIONS DELETE THRESHOLD ("+deleteThresholdStr+") EXCEEDED -- no annotations deleted");
             return 0;
         }
-        return annotationDAO.deleteAnnotations(createdBy, dt);
+        return annotationDAO.deleteAnnotations(fullAnnotKeys);
     }
 
     /**

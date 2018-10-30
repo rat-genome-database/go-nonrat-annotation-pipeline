@@ -1,9 +1,13 @@
 # load mouse and human GO Annotations into FULL_ANNOT table
 #
 . /etc/profile
-HOMEDIR=/home/rgddata/pipelines/mouseandhumanGOAnnotationPipeline
+APPNAME=mouseandhumanGOAnnotationPipeline
+HOMEDIR=/home/rgddata/pipelines/$APPNAME
+cd $HOMEDIR
 
-$HOMEDIR/_run.sh
+java -Dspring.config=$HOMEDIR/../properties/default_db.xml \
+  -Dlog4j.configuration=file://$HOMEDIR/properties/log4j.properties \
+  -jar ./$APPNAME.jar "$@"
 
 echo "Unprocessed Source Databases (count db):"
 TODAY=`date +%Y%m%d`
