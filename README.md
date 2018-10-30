@@ -2,7 +2,9 @@
 Goals:
 
 - Load / update GO annotations for mouse, human and dog genes from GO consortium.
+- Generate inferred ISO annotations for RAT from loaded mouse, human and dog GO annotations.
 - Generate inferred ISO annotations for RAT from manual chinchilla GO annotations.
+- Evidence codes to make inferred rat annotations: 'EXP', 'IDA', 'IEP', 'IGI', 'IMP', 'IPI'.
 
 The source files are loaded from ftp://ftp.geneontology.org/pub/go/gene-associations/
 

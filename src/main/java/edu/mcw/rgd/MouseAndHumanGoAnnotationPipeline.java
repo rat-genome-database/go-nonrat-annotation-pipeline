@@ -98,8 +98,6 @@ public class MouseAndHumanGoAnnotationPipeline {
         manager.run();
 
         dumpStats(manager, speciesTypeKey);
-
-        logStatus.info("===  "+SpeciesType.getCommonName(speciesTypeKey)+" OK  ===");
     }
 
     public void run() throws Exception{
@@ -116,6 +114,8 @@ public class MouseAndHumanGoAnnotationPipeline {
         downloadAndProcessFiles(getGoaHumanDbSources(), getGoaHumanRefRgdId(), getGoaHumanFiles(), SpeciesType.HUMAN);
         downloadAndProcessFiles(getGoaMouseDbSources(), getMgiRefRgdId(), getMgiFiles(), SpeciesType.MOUSE);
         downloadAndProcessFiles(getGoaDogDbSources(), getGoaDogRefRgdId(), getGoaDogFiles(), SpeciesType.DOG);
+
+        // Note: chinchilla processing must run as the last species!
         downloadAndProcessFiles(null, getIssRefRgdId(), null, SpeciesType.CHINCHILLA);
 
         // show current counts
@@ -180,13 +180,16 @@ public class MouseAndHumanGoAnnotationPipeline {
         logStatus.info("COUNT REF_RGD_ID:" + getGoaDogRefRgdId() + " " + count_2+"  -- DOG");
 
         int count_ISO = dao.getCountOfAnnotationForRefRgdId(getIssRefRgdId());
-        logStatus.info("COUNT REF_RGD_ID:" + getIssRefRgdId() + " " + count_ISO+"  -- RAT ISO, CHINCHILLA DERIVED");
+        logStatus.info("COUNT REF_RGD_ID:" + getIssRefRgdId() + " " + count_ISO+"  -- RAT ISO");
     }
 
     public void downloadAndProcessFiles(List<String> databases, int refRgdId, List<String> fileNames, int speciesTypeKey) throws Exception {
+
+        long time0 = System.currentTimeMillis();
+
         if( fileNames==null ) {
-            // chinchilla
-            processFile(null, null, refRgdId, speciesTypeKey);
+            // chinchilla does not have any external source files
+            processFile(null, null, 0, speciesTypeKey);
         } else {
             List<String> localFiles = new ArrayList<>();
             for (String fileName : fileNames) {
@@ -194,10 +197,15 @@ public class MouseAndHumanGoAnnotationPipeline {
             }
             processFile(localFiles, databases, refRgdId, speciesTypeKey);
         }
+        String speciesName = SpeciesType.getCommonName(speciesTypeKey);
 
         // delete annotations not updated/inserted by the pipeline
         int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), pipelineStartTime, logStatus, getStaleAnnotDeleteThreshold(), refRgdId);
-        logStatus.info("DELETED OLD ANNOTATIONS "+annotsDeleted);
+        if( annotsDeleted!=0 ) {
+            logStatus.info(annotsDeleted + " " + speciesName + " STALE ANNOTATIONS DELETED");
+        }
+
+        logStatus.info("===  "+speciesName+" OK  === elapsed "+Utils.formatElapsedTime(time0, System.currentTimeMillis()));
     }
 
     String downloadFile(String file) throws Exception {
