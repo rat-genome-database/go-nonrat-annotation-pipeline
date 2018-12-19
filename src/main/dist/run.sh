@@ -7,7 +7,7 @@ cd $HOMEDIR
 
 java -Dspring.config=$HOMEDIR/../properties/default_db.xml \
   -Dlog4j.configuration=file://$HOMEDIR/properties/log4j.properties \
-  -jar ./$APPNAME.jar "$@"
+  -jar lib/$APPNAME.jar "$@"
 
 echo "Unprocessed Source Databases (count db):"
 TODAY=`date +%Y%m%d`

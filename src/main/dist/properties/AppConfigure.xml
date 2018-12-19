@@ -1,7 +1,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.MouseAndHumanGoAnnotationPipeline">
-        <property name="version" value="MouseAndHumanGoAnnotationPipeline, v 2.4.4, build Oct 30, 2018" />
+        <property name="version" value="MouseAndHumanGoAnnotationPipeline, v 2.4.5, build Dec 19, 2018" />
         <property name="remoteDir" value="ftp://ftp.geneontology.org/pub/go/gene-associations/"/>
         <property name="localDir" value="data/"/>
 

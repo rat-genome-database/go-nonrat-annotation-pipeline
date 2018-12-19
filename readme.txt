@@ -1,3 +1,6 @@
+Version 2.4.5: Dec 19, 2018
+ - updated dependencies (FULL_ANNOT table changed)
+
 Version 2.4.4: Oct 30, 2018
  - stale annotations are now processed by species, to be more informative
 
