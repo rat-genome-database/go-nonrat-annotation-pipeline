@@ -183,6 +183,9 @@ public class MouseAndHumanGoAnnotationPipeline {
         int count_2 = dao.getCountOfAnnotationForRefRgdId(getGoaDogRefRgdId());
         logStatus.info("COUNT REF_RGD_ID:" + getGoaDogRefRgdId() + " " + count_2+"  -- DOG");
 
+        int count_3 = dao.getCountOfAnnotationForRefRgdId(getGoaPigRefRgdId());
+        logStatus.info("COUNT REF_RGD_ID:" + getGoaPigRefRgdId() + " " + count_3+"  -- PIG");
+
         int count_ISO = dao.getCountOfAnnotationForRefRgdId(getIssRefRgdId());
         logStatus.info("COUNT REF_RGD_ID:" + getIssRefRgdId() + " " + count_ISO+"  -- RAT ISO");
     }
