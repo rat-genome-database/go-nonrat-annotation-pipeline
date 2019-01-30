@@ -34,9 +34,12 @@ public class MouseAndHumanGoAnnotationPipeline {
     private List<String> goaMouseDbSources;
     private List<String> goaDogFiles;
     private List<String> goaDogDbSources;
+    private List<String> goaPigFiles;
+    private List<String> goaPigDbSources;
     private int goaHumanRefRgdId;
     private int mgiRefRgdId;
     private int goaDogRefRgdId;
+    private int goaPigRefRgdId;
     private int issRefRgdId;
     private int createdBy;
     private String version;
@@ -114,6 +117,7 @@ public class MouseAndHumanGoAnnotationPipeline {
         downloadAndProcessFiles(getGoaHumanDbSources(), getGoaHumanRefRgdId(), getGoaHumanFiles(), SpeciesType.HUMAN);
         downloadAndProcessFiles(getGoaMouseDbSources(), getMgiRefRgdId(), getMgiFiles(), SpeciesType.MOUSE);
         downloadAndProcessFiles(getGoaDogDbSources(), getGoaDogRefRgdId(), getGoaDogFiles(), SpeciesType.DOG);
+        downloadAndProcessFiles(getGoaPigDbSources(), getGoaPigRefRgdId(), getGoaPigFiles(), SpeciesType.PIG);
 
         // Note: chinchilla processing must run as the last species!
         downloadAndProcessFiles(null, getIssRefRgdId(), null, SpeciesType.CHINCHILLA);
@@ -366,5 +370,29 @@ public class MouseAndHumanGoAnnotationPipeline {
 
     public MAHParser getParser() {
         return parser;
+    }
+
+    public List<String> getGoaPigFiles() {
+        return goaPigFiles;
+    }
+
+    public void setGoaPigFiles(List<String> goaPigFiles) {
+        this.goaPigFiles = goaPigFiles;
+    }
+
+    public List<String> getGoaPigDbSources() {
+        return goaPigDbSources;
+    }
+
+    public void setGoaPigDbSources(List<String> goaPigDbSources) {
+        this.goaPigDbSources = goaPigDbSources;
+    }
+
+    public int getGoaPigRefRgdId() {
+        return goaPigRefRgdId;
+    }
+
+    public void setGoaPigRefRgdId(int goaPigRefRgdId) {
+        this.goaPigRefRgdId = goaPigRefRgdId;
     }
 }

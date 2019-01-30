@@ -1,3 +1,6 @@
+Version 2.4.6: Jan 30, 2019
+ - added support for pig
+
 Version 2.4.5: Dec 19, 2018
  - updated dependencies (FULL_ANNOT table changed)
 

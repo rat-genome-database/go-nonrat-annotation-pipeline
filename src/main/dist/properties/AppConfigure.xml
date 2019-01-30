@@ -1,7 +1,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.MouseAndHumanGoAnnotationPipeline">
-        <property name="version" value="MouseAndHumanGoAnnotationPipeline, v 2.4.5, build Dec 19, 2018" />
+        <property name="version" value="MouseAndHumanGoAnnotationPipeline, v 2.4.6, build Jan 30, 2019" />
         <property name="remoteDir" value="ftp://ftp.geneontology.org/pub/go/gene-associations/"/>
         <property name="localDir" value="data/"/>
 
@@ -46,9 +46,24 @@
             </list>
         </property>
 
+        <property name="goaPigFiles">
+            <list>
+                <value>goa_pig.gaf.gz</value>
+                <value>goa_pig_complex.gaf.gz</value>
+                <value>goa_pig_isoform.gaf.gz</value>
+                <value>goa_pig_rna.gaf.gz</value>
+            </list>
+        </property>
+        <property name="goaPigDbSources">
+            <list>
+                <value>UniProtKB</value>
+            </list>
+        </property>
+
         <property name="mgiRefRgdId" value="2290270" />
         <property name="goaHumanRefRgdId" value="2290271" />
         <property name="goaDogRefRgdId" value="13508589" />
+        <property name="goaPigRefRgdId" value="14298760" />
         <property name="issRefRgdId" value="1624291" />
         <property name="createdBy" value="190" />
         <property name="pipelineQueueSize" value="6000" />
