@@ -1,5 +1,5 @@
 Version 2.4.7: Apr 22, 2019
- - fixed handling of stale annotations
+ - fixed data source for HUMAN, DOG and PIG
 
 Version 2.4.6: Jan 30, 2019
  - added support for pig

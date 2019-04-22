@@ -2,12 +2,11 @@
 <beans>
     <bean id="loader" class="edu.mcw.rgd.MouseAndHumanGoAnnotationPipeline">
         <property name="version" value="MouseAndHumanGoAnnotationPipeline, v 2.4.7, build Apr 22, 2019" />
-        <property name="remoteDir" value="ftp://ftp.geneontology.org/pub/go/gene-associations/"/>
-        <property name="localDir" value="data/"/>
+        <property name="localDir" value="data"/>
 
         <property name="mgiFiles">
             <list>
-                <value>gene_association.mgi.gz</value>
+                <value>ftp://ftp.geneontology.org/pub/go/gene-associations/gene_association.mgi.gz</value>
             </list>
         </property>
         <property name="goaMouseDbSources">
@@ -18,10 +17,10 @@
 
         <property name="goaHumanFiles">
             <list>
-                <value>goa_human.gaf.gz</value>
-                <value>goa_human_complex.gaf.gz</value>
-                <value>goa_human_isoform.gaf.gz</value>
-                <value>goa_human_rna.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_complex.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_isoform.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_rna.gaf.gz</value>
             </list>
         </property>
         <property name="goaHumanDbSources">
@@ -34,10 +33,10 @@
 
         <property name="goaDogFiles">
             <list>
-                <value>goa_dog.gaf.gz</value>
-                <value>goa_dog_complex.gaf.gz</value>
-                <value>goa_dog_isoform.gaf.gz</value>
-                <value>goa_dog_rna.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/DOG/goa_dog.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/DOG/goa_dog_complex.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/DOG/goa_dog_isoform.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/DOG/goa_dog_rna.gaf.gz</value>
             </list>
         </property>
         <property name="goaDogDbSources">
@@ -48,10 +47,10 @@
 
         <property name="goaPigFiles">
             <list>
-                <value>goa_pig.gaf.gz</value>
-                <value>goa_pig_complex.gaf.gz</value>
-                <value>goa_pig_isoform.gaf.gz</value>
-                <value>goa_pig_rna.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/PIG/goa_pig.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/PIG/goa_pig_complex.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/PIG/goa_pig_isoform.gaf.gz</value>
+                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/PIG/goa_pig_rna.gaf.gz</value>
             </list>
         </property>
         <property name="goaPigDbSources">

@@ -26,7 +26,6 @@ import java.util.*;
  */
 public class MouseAndHumanGoAnnotationPipeline {
 
-    private String remoteDir;
     private String localDir;
     private List<String> mgiFiles;
     private List<String> goaHumanFiles;
@@ -218,9 +217,13 @@ public class MouseAndHumanGoAnnotationPipeline {
     }
 
     String downloadFile(String file) throws Exception {
+        // determine local file name
+        int lastSlashPos = file.lastIndexOf('/');
+        String localFileName = getLocalDir() + file.substring(lastSlashPos);
+
         FileDownloader downloader = new FileDownloader();
-        downloader.setExternalFile(getRemoteDir()+file);
-        downloader.setLocalFile(getLocalDir()+file);
+        downloader.setExternalFile(file);
+        downloader.setLocalFile(localFileName);
         downloader.setPrependDateStamp(true);
         return downloader.downloadNew();
     }
@@ -263,14 +266,6 @@ public class MouseAndHumanGoAnnotationPipeline {
 
     public String getVersion() {
         return version;
-    }
-
-    public void setRemoteDir(String remoteDir) {
-        this.remoteDir = remoteDir;
-    }
-
-    public String getRemoteDir() {
-        return remoteDir;
     }
 
     public void setLocalDir(String localDir) {
