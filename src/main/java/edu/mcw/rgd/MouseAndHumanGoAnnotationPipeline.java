@@ -81,9 +81,6 @@ public class MouseAndHumanGoAnnotationPipeline {
         long startTime = System.currentTimeMillis();
         staleAnnotCutoffDate = Utils.addDaysToDate(new Date(), -1);
 
-        logStatus.info("evidence codes to make inferred rat annotations: "
-                +Utils.concatenate(qc.getEvidenceCodesToMakeRatAnnots(), ", ", "\'"));
-
         mapRgdIdStatus = dao.getStatusForGeneRgdIds();
 
         // show current counts
@@ -98,13 +95,23 @@ public class MouseAndHumanGoAnnotationPipeline {
         // Note: chinchilla processing must run as the last species!
         downloadAndProcessFiles(null, getIssRefRgdId(), null, SpeciesType.CHINCHILLA);
 
+        logStatus.info("evidence codes to make inferred rat annotations: "
+                +Utils.concatenate(qc.getEvidenceCodesToMakeRatAnnots(), ", ", "\'"));
+
+        if( false ) {
+            // evidence codes with counts
+            logStatus.info("evidence codes not used to make rat annotations:");
+            for (Map.Entry<String, Integer> entry : MAHQC.wrongEvidenceCounts.entrySet()) {
+                logStatus.info("  " + entry.getKey() + ": " + entry.getValue());
+            }
+        } else {
+            // evidence codes without counts
+            logStatus.info("evidence codes not used to make rat annotations: "
+                    +Utils.concatenate(MAHQC.wrongEvidenceCounts.keySet(), ", ", "\'"));
+        }
+
         // show current counts
         dumpCountsForRefRgdIds();
-
-        logStatus.info("evidence codes not used to make rat annotations:");
-        for( Map.Entry<String,Integer> entry: MAHQC.wrongEvidenceCounts.entrySet() ) {
-            logStatus.info("  "+entry.getKey()+": "+entry.getValue());
-        }
 
         // show total elapsed time
         long endTime = System.currentTimeMillis();
