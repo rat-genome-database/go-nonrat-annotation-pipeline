@@ -5,7 +5,7 @@ APPNAME=mouseandhumanGOAnnotationPipeline
 HOMEDIR=/home/rgddata/pipelines/$APPNAME
 cd $HOMEDIR
 
-java -Dspring.config=$HOMEDIR/../properties/default_db.xml \
+java -Dspring.config=$HOMEDIR/../properties/default_db2.xml \
   -Dlog4j.configuration=file://$HOMEDIR/properties/log4j.properties \
   -jar lib/$APPNAME.jar "$@"
 

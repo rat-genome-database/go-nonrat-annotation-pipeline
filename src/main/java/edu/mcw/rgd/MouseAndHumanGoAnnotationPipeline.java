@@ -13,10 +13,10 @@ import java.util.Date;
 import java.util.*;
 
 /**
- * - download and process mouse, human and dog GO annotations from GO consortium
+ * - download and process mouse, human, dog and pig GO annotations from GO consortium
  * - generates inferred rat annotations from GO manual chinchilla annotations
  * <p>
- * Logic for mouse-human-dog: <ul>
+ * Logic for mouse-human-dog-pig: <ul>
  * <li>created-date of incoming annotations that are inserted into db is set to SYSDATE
  * <li>last-modified-date is set to SYSDATE every time the annotation is processed through the pipeline
  * <li>created-date is refreshed (set to SYSDATE) for IEA annotations with created-date older than 9 months
@@ -48,7 +48,7 @@ public class MouseAndHumanGoAnnotationPipeline {
 
     MouseAndHumanGoAnnotationDAO dao = new MouseAndHumanGoAnnotationDAO();
     Map<Integer,String> mapRgdIdStatus;
-    Date pipelineStartTime = new Date();
+    Date staleAnnotCutoffDate;
 
     protected final Logger logStatus = Logger.getLogger("status");
     protected final Logger logException = Logger.getLogger("exception");
@@ -77,33 +77,10 @@ public class MouseAndHumanGoAnnotationPipeline {
         loader.run();
     }
 
-    public void processFile(List<String> fileNames, List<String> fromDatabases, int internalRefRGDID, int speciesTypeKey) throws Exception{
-
-        parser.init(fileNames, fromDatabases, speciesTypeKey, dao);
-        qc.init(dao, mapRgdIdStatus, internalRefRGDID, createdBy, issRefRgdId, speciesTypeKey);
-        MAHDL dl = new MAHDL(dao);
-
-        PipelineManager manager = new PipelineManager();
-        manager.addPipelineWorkgroup(parser, "PP", 1, getPipelineQueueSize());
-        manager.addPipelineWorkgroup(qc, "QC", getQcThreadCount(), getPipelineQueueSize());
-        manager.addPipelineWorkgroup(dl, "DL", 1, getPipelineQueueSize());
-
-        // because we are doing annotation QC and loading in parallel thread, conflicts could happen
-        // resulting in an attempt to insert duplicate annotations;
-        // we do allow for up-to 100000 duplicate annotations to be resolved later
-        manager.getSession().setAllowedExceptions(100000);
-
-        // violations of unique key during inserts of annotations will be handled silently,
-        // without writing anything to the logs
-        manager.getSession().registerUserException(new String[]{
-                "FULL_ANNOT_MULT_UC", "DataIntegrityViolationException", "SQLIntegrityConstraintViolationException"});
-
-        manager.run();
-
-        dumpStats(manager, speciesTypeKey);
-    }
-
     public void run() throws Exception{
+
+        long startTime = System.currentTimeMillis();
+        staleAnnotCutoffDate = Utils.addDaysToDate(new Date(), -1);
 
         logStatus.info("evidence codes to make inferred rat annotations: "
                 +Utils.concatenate(qc.getEvidenceCodesToMakeRatAnnots(), ", ", "\'"));
@@ -131,9 +108,34 @@ public class MouseAndHumanGoAnnotationPipeline {
         }
 
         // show total elapsed time
-        long startTime = pipelineStartTime.getTime();
         long endTime = System.currentTimeMillis();
         logStatus.info("ELAPSED TIME: "+Utils.formatElapsedTime(startTime, endTime));
+    }
+
+    public void processFile(List<String> fileNames, List<String> fromDatabases, int internalRefRGDID, int speciesTypeKey) throws Exception{
+
+        parser.init(fileNames, fromDatabases, speciesTypeKey, dao);
+        qc.init(dao, mapRgdIdStatus, internalRefRGDID, createdBy, issRefRgdId, speciesTypeKey);
+        MAHDL dl = new MAHDL(dao);
+
+        PipelineManager manager = new PipelineManager();
+        manager.addPipelineWorkgroup(parser, "PP", 1, getPipelineQueueSize());
+        manager.addPipelineWorkgroup(qc, "QC", getQcThreadCount(), getPipelineQueueSize());
+        manager.addPipelineWorkgroup(dl, "DL", 1, getPipelineQueueSize());
+
+        // because we are doing annotation QC and loading in parallel thread, conflicts could happen
+        // resulting in an attempt to insert duplicate annotations;
+        // we do allow for up-to 100000 duplicate annotations to be resolved later
+        manager.getSession().setAllowedExceptions(100000);
+
+        // violations of unique key during inserts of annotations will be handled silently,
+        // without writing anything to the logs
+        manager.getSession().registerUserException(new String[]{
+                "FULL_ANNOT_MULT_UC", "DataIntegrityViolationException", "SQLIntegrityConstraintViolationException"});
+
+        manager.run();
+
+        dumpStats(manager, speciesTypeKey);
     }
 
     void dumpStats(PipelineManager manager, int speciesTypeKey) {
@@ -207,7 +209,7 @@ public class MouseAndHumanGoAnnotationPipeline {
         String speciesName = SpeciesType.getCommonName(speciesTypeKey);
 
         // delete annotations not updated/inserted by the pipeline
-        int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), pipelineStartTime, logStatus, getStaleAnnotDeleteThreshold(), refRgdId);
+        int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), staleAnnotCutoffDate, logStatus, getStaleAnnotDeleteThreshold(), refRgdId);
         if( annotsDeleted!=0 ) {
             logStatus.info(annotsDeleted + " " + speciesName + " STALE ANNOTATIONS DELETED");
         }
