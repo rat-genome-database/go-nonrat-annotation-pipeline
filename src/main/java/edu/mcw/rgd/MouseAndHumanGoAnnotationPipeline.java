@@ -9,6 +9,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.FileSystemResource;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.*;
 
@@ -80,6 +81,10 @@ public class MouseAndHumanGoAnnotationPipeline {
 
         long startTime = System.currentTimeMillis();
         staleAnnotCutoffDate = Utils.addDaysToDate(new Date(), -1);
+
+        logStatus.info("   "+dao.getConnectionInfo());
+        SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        logStatus.info("   started at "+sdt.format(new Date(startTime)));
 
         mapRgdIdStatus = dao.getStatusForGeneRgdIds();
 
@@ -221,6 +226,7 @@ public class MouseAndHumanGoAnnotationPipeline {
         }
 
         logStatus.info("===  "+speciesName+" OK  === elapsed "+Utils.formatElapsedTime(time0, System.currentTimeMillis()));
+        logStatus.info("");
     }
 
     String downloadFile(String file) throws Exception {

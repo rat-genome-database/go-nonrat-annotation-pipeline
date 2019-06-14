@@ -59,11 +59,6 @@ public class MAHDL extends RecordProcessor {
         incomingAnnots.values().parallelStream().forEach( e -> {
             processAnnotBucket2(e);
         });
-
-        // single-thread version
-        //for( List<MAHAnnotData> list: incomingAnnots.values() ) {
-        //    processAnnotBucket(list);
-        //}
     }
 
     void processAnnotBucket2(List<MAHAnnotData> list) {
@@ -93,7 +88,7 @@ public class MAHDL extends RecordProcessor {
             }
             String xrefSourceStrNew = Utils.concatenate(xrefSource,"|");
             if( xrefSourceStrNew.length()>4000 ) {
-                System.out.println("  XREF_SRC > 4000");
+                getSession().incrementCounter("  TRUNCATED XREF_SOURCE (XREF_SOURCE LENGTH > 4000)", 1);
                 // too long merged XREF_SOURCE -- emit existing annotation
                 merged.setXrefSource(xrefSourceStr);
                 merged.setNotes(Utils.concatenate(notes, "|"));

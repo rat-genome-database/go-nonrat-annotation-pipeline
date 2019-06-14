@@ -1,3 +1,6 @@
+Jun 14, 2019
+ - improved summary email
+
 Version 2.4.7: Apr 22, 2019
  - fixed data source for HUMAN, DOG and PIG
 

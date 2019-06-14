@@ -27,6 +27,10 @@ public class MouseAndHumanGoAnnotationDAO  {
     RGDManagementDAO managementDAO = new RGDManagementDAO();
     XdbIdDAO xdbIdDAO = new XdbIdDAO();
 
+    public String getConnectionInfo() {
+        return geneDAO.getConnectionInfo();
+    }
+
     /**
      * Returns a Gene based on an rgd id
      * @param rgdId rgd id
