@@ -19,9 +19,9 @@ public class MAHParser extends RecordPreprocessor {
     private int speciesTypeKey = 0;
     private List<String> fileNames = null;
     private List<String> fromDatabases = null;
-    private MouseAndHumanGoAnnotationDAO dao;
+    private DAO dao;
 
-    public void init( List<String> fileNames, List<String> fromDatabases, int speciesTypeKey, MouseAndHumanGoAnnotationDAO dao ) {
+    public void init( List<String> fileNames, List<String> fromDatabases, int speciesTypeKey, DAO dao ) {
 
         this.fileNames = fileNames;
         this.fromDatabases = fromDatabases;

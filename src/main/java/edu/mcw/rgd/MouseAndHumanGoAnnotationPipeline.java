@@ -46,7 +46,7 @@ public class MouseAndHumanGoAnnotationPipeline {
     private int pipelineQueueSize;
     private int qcThreadCount;
 
-    MouseAndHumanGoAnnotationDAO dao = new MouseAndHumanGoAnnotationDAO();
+    DAO dao = new DAO();
     Map<Integer,String> mapRgdIdStatus;
     Date staleAnnotCutoffDate;
 
@@ -80,7 +80,7 @@ public class MouseAndHumanGoAnnotationPipeline {
     public void run() throws Exception{
 
         long startTime = System.currentTimeMillis();
-        staleAnnotCutoffDate = Utils.addDaysToDate(new Date(), -1);
+        staleAnnotCutoffDate = Utils.addHoursToDate(new Date(), -1);
 
         logStatus.info("   "+dao.getConnectionInfo());
         SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

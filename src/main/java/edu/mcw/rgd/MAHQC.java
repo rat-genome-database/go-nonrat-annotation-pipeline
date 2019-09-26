@@ -32,7 +32,7 @@ public class MAHQC extends RecordProcessor {
 
     static public Map<String,Integer> wrongEvidenceCounts = new HashMap<>();
 
-    private MouseAndHumanGoAnnotationDAO dao;
+    private DAO dao;
     private Map<Integer,String> mapRgdIdStatus;
     private int internalRefRGDID;
     private int createdBy;
@@ -41,7 +41,7 @@ public class MAHQC extends RecordProcessor {
     private Map<String,String> sourceSubst;
     private Set<String> evidenceCodesToMakeRatAnnots;
 
-    public void init(MouseAndHumanGoAnnotationDAO dao, Map<Integer,String> mapRgdIdStatus,
+    public void init(DAO dao, Map<Integer,String> mapRgdIdStatus,
                  int internalRefRgdId, int createdBy, int issRefRgdId, int speciesTypeKey) {
         this.dao = dao;
         this.mapRgdIdStatus = mapRgdIdStatus;

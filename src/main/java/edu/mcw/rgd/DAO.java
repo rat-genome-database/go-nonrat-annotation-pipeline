@@ -13,11 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author mtutaj
- * Date: Sep 1, 2010
- * <p>
+ * @since Sep 1, 2010
  * all database related stuff should be here
  */
-public class MouseAndHumanGoAnnotationDAO  {
+public class DAO  {
 
     protected final Logger logDelete = Logger.getLogger("delete");
 

@@ -1,12 +1,12 @@
-package edu.mcw.rgd;
+    package edu.mcw.rgd;
 
-import edu.mcw.rgd.datamodel.ontology.Annotation;
-import edu.mcw.rgd.pipelines.PipelineRecord;
-import edu.mcw.rgd.pipelines.RecordProcessor;
-import edu.mcw.rgd.process.Utils;
-import org.apache.log4j.Logger;
+    import edu.mcw.rgd.datamodel.ontology.Annotation;
+    import edu.mcw.rgd.pipelines.PipelineRecord;
+    import edu.mcw.rgd.pipelines.RecordProcessor;
+    import edu.mcw.rgd.process.Utils;
+    import org.apache.log4j.Logger;
 
-import java.util.*;
+    import java.util.*;
 
 /**
  * @author mtutaj
@@ -16,11 +16,11 @@ public class MAHDL extends RecordProcessor {
     protected final Logger logInsert = Logger.getLogger("insert");
     protected final Logger logUpdate = Logger.getLogger("update");
 
-    private MouseAndHumanGoAnnotationDAO dao;
+    private DAO dao;
 
     private Map<String, List<MAHAnnotData>> incomingAnnots = new HashMap<>();
 
-    public MAHDL(MouseAndHumanGoAnnotationDAO dao) {
+    public MAHDL(DAO dao) {
         this.dao = dao;
     }
 
@@ -75,8 +75,11 @@ public class MAHDL extends RecordProcessor {
         MAHAnnotData adata = list.get(0);
         Annotation merged = adata.incomingAnnot;
         Set<String> notes = new TreeSet<>();
+        String notesStr = "";
         Set<String> xrefSource = new TreeSet<>();
         String xrefSourceStr = "";
+        Set<String> xrefSourceWithPmids = new TreeSet<>();
+
         for( MAHAnnotData ad: list ) {
             Annotation a = ad.incomingAnnot;
 
@@ -91,14 +94,16 @@ public class MAHDL extends RecordProcessor {
                 getSession().incrementCounter("  TRUNCATED XREF_SOURCE (XREF_SOURCE LENGTH > 4000)", 1);
                 // too long merged XREF_SOURCE -- emit existing annotation
                 merged.setXrefSource(xrefSourceStr);
-                merged.setNotes(Utils.concatenate(notes, "|"));
+                merged.setNotes(notesStr);
                 handleAnnot(merged, adata);
 
                 // start new set of XREF_SOURCE, NOTES
                 xrefSource.clear();
                 Collections.addAll(xrefSource, xrefCols);
                 notes.clear();
+                xrefSourceWithPmids.clear();
             }
+
             if( !Utils.isStringEmpty(a.getNotes()) ) {
                 String[] cols = a.getNotes().split("[\\|\\,]");
                 Collections.addAll(notes, cols);
@@ -106,16 +111,32 @@ public class MAHDL extends RecordProcessor {
                 notes.removeAll(xrefSource);
             }
 
+            if(a.getXrefSource().contains("PMID") ) {
+                xrefSourceWithPmids.add("("+a.getXrefSource()+")");
+            }
+
             xrefSourceStr = xrefSourceStrNew;
+            notesStr = Utils.concatenate(notes, "|");
+            if( !xrefSourceWithPmids.isEmpty() ) {
+                notesStr += "  "+Utils.concatenate(xrefSourceWithPmids, ", ");
+            }
         }
 
         // emit annot
         merged.setXrefSource(xrefSourceStr);
-        merged.setNotes(Utils.concatenate(notes, "|"));
+        merged.setNotes(notesStr);
         handleAnnot(merged, adata);
     }
 
     void handleAnnot(Annotation a, MAHAnnotData adata) throws Exception {
+
+        // clear NOTES if they are the same as XREF_SOURCE
+        if( !Utils.isStringEmpty(a.getNotes()) ) {
+            if( Utils.stringsAreEqual(a.getXrefSource(), a.getNotes()) ) {
+                a.setNotes(null);
+            }
+        }
+
         // get matching annot in RGD
         int annotKey = dao.getAnnotationKey(a);
         if( annotKey==0 ) {
