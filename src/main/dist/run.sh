@@ -1,7 +1,7 @@
-# load mouse and human GO Annotations into FULL_ANNOT table
+# load GO Annotations for mouse/human/dog/pig into FULL_ANNOT table
 #
 . /etc/profile
-APPNAME=mouseandhumanGOAnnotationPipeline
+APPNAME=GoNonRatAnnotationPipeline
 HOMEDIR=/home/rgddata/pipelines/$APPNAME
 
 SERVER=`hostname -s | tr '[a-z]' '[A-Z]'`
@@ -27,4 +27,4 @@ zcat $HOMEDIR/data/${TODAY}_goa_human*.gaf.gz \
   | awk '{print $1}' \
   | sort | uniq -c       >> $HOMEDIR/log/status_summary.log
 
-mailx -s "[$SERVER] Mouse and Human GO Annotation Pipeline" $EMAIL_LIST < $HOMEDIR/log/status_summary.log
+mailx -s "[$SERVER] GO NonRat Annotation Pipeline" $EMAIL_LIST < $HOMEDIR/log/status_summary.log
