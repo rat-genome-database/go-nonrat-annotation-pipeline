@@ -1,3 +1,6 @@
+Nov 27, 2019
+  removed unused jar dependency
+  
 Sep 26, 2019
  - NOTES for consolidated annotations contain info allowing to deconsolidate the annotation into multiple ones
    (to be used in GAF generator: GAF spec allows only one PMID in REFERENCE column)

@@ -1,12 +1,12 @@
-    package edu.mcw.rgd;
+package edu.mcw.rgd;
 
-    import edu.mcw.rgd.datamodel.ontology.Annotation;
-    import edu.mcw.rgd.pipelines.PipelineRecord;
-    import edu.mcw.rgd.pipelines.RecordProcessor;
-    import edu.mcw.rgd.process.Utils;
-    import org.apache.log4j.Logger;
+import edu.mcw.rgd.datamodel.ontology.Annotation;
+import edu.mcw.rgd.pipelines.PipelineRecord;
+import edu.mcw.rgd.pipelines.RecordProcessor;
+import edu.mcw.rgd.process.Utils;
+import org.apache.log4j.Logger;
 
-    import java.util.*;
+import java.util.*;
 
 /**
  * @author mtutaj
