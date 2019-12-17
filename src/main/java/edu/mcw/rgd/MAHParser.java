@@ -2,11 +2,11 @@ package edu.mcw.rgd;
 
 import edu.mcw.rgd.datamodel.SpeciesType;
 import edu.mcw.rgd.datamodel.ontology.Annotation;
-import edu.mcw.rgd.pipelines.RecordPreprocessor;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
@@ -14,7 +14,7 @@ import java.util.zip.GZIPInputStream;
 /**
  * Created by mtutaj on 3/2/2018.
  */
-public class MAHParser extends RecordPreprocessor {
+public class MAHParser {
 
     private int speciesTypeKey = 0;
     private List<String> fileNames = null;
@@ -29,14 +29,12 @@ public class MAHParser extends RecordPreprocessor {
         this.dao = dao;
     }
 
-    @Override
-    public void process() throws Exception {
-        if( speciesTypeKey== SpeciesType.CHINCHILLA ) {
-            processForChinchilla();
-            return;
+    public List<MAHRecord> process() throws Exception {
+        if( speciesTypeKey == SpeciesType.CHINCHILLA ) {
+            return processForChinchilla();
         }
 
-        int recNo = 0;
+        List<MAHRecord> records = new ArrayList<>();
         for( String fileName: fileNames ) {
             InputStream fis = new FileInputStream(fileName);
             GZIPInputStream gis = new GZIPInputStream(fis);
@@ -51,21 +49,21 @@ public class MAHParser extends RecordPreprocessor {
                 }
 
                 MAHRecord rec = new MAHRecord();
-                rec.setRecNo(++recNo);
                 rec.fileLine = lineCols;
                 rec.dbName = dbName;
-                getSession().putRecordToFirstQueue(rec);
+                records.add(rec);
             }
             fis.close();
         }
+        return records;
     }
 
-    void processForChinchilla() throws Exception {
+    List<MAHRecord> processForChinchilla() throws Exception {
 
         String taxon = "taxon:"+SpeciesType.getTaxonomicId(speciesTypeKey);
         SimpleDateFormat sdt = new SimpleDateFormat("yyyyMMdd");
 
-        int recNo = 0;
+        List<MAHRecord> records = new ArrayList<>();
         List<Annotation> goAnnots = dao.getManualGoAnnotsForChinchilla();
         for( Annotation annot: goAnnots ) {
             // turn an annot into a GAF line
@@ -90,10 +88,10 @@ public class MAHParser extends RecordPreprocessor {
             lineCols[14] = "RGD"; // Assigned By
 
             MAHRecord rec = new MAHRecord();
-            rec.setRecNo(++recNo);
             rec.fileLine = lineCols;
             rec.dbName = "RGD";
-            getSession().putRecordToFirstQueue(rec);
+            records.add(rec);
         }
+        return records;
     }
 }

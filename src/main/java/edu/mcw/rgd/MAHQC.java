@@ -6,8 +6,7 @@ import edu.mcw.rgd.datamodel.SpeciesType;
 import edu.mcw.rgd.datamodel.XdbId;
 import edu.mcw.rgd.datamodel.ontology.Annotation;
 import edu.mcw.rgd.datamodel.ontologyx.Term;
-import edu.mcw.rgd.pipelines.PipelineRecord;
-import edu.mcw.rgd.pipelines.RecordProcessor;
+import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.Utils;
 import org.apache.log4j.Logger;
 
@@ -20,7 +19,7 @@ import java.util.*;
  * <p>Note: as of May 13, 2016, created-date of all annotations is set to the current time stamp;
  * and incoming data created-date is no longer used by the pipeline
  */
-public class MAHQC extends RecordProcessor {
+public class MAHQC {
 
     protected final Logger logStatus = Logger.getLogger("status");
     protected final Logger logUnmatched = Logger.getLogger("unmatched");
@@ -51,35 +50,33 @@ public class MAHQC extends RecordProcessor {
         this.speciesTypeKey = speciesTypeKey;
     }
 
-    @Override
-    public void process(PipelineRecord pipelineRecord) throws Exception {
+    public void process(MAHRecord rec, CounterPool counters) throws Exception {
 
-        MAHRecord rec = (MAHRecord) pipelineRecord;
         rec.annotData.clear();
 
         // skip high level terms
         String termAcc=rec.fileLine[4];
         if( !dao.isForCuration(termAcc) ) {
             logHighLevelGoTerm.info(Arrays.toString(rec.fileLine));
-            getSession().incrementCounter("highLevelGoTerm", 1);
+            counters.increment("highLevelGoTerm");
             return;
         }
 
         // skip IPI annotations to catalytic activity terms
         String dBEvidenceCode = rec.fileLine[6];
         if( dBEvidenceCode.equals("IPI") && dao.isCatalyticActivityTerm(termAcc) ) {
-            getSession().incrementCounter("IPIAnnotToCatalyticActivityTerm", 1);
+            counters.increment("IPIAnnotToCatalyticActivityTerm");
             logCatalyticActivityIPIGoTerm.info(Arrays.toString(rec.fileLine));
             return;
         }
 
         List<Gene> genes = qcGenes(rec);
 
-        Collection<Gene> validGenes = validateGeneStatus(genes, rec.dbObjectID, rec.dbName);
+        Collection<Gene> validGenes = validateGeneStatus(genes, rec.dbObjectID, rec.dbName, counters);
 
         if (validGenes.isEmpty()) {
             logUnmatched.info(rec.dbName+": "+rec.dbObjectID);
-            getSession().incrementCounter("unmatchedCounter", 1);
+            counters.increment("unmatchedCounter");
             return; // no match either -- continue to the next file line
         }
 
@@ -89,11 +86,11 @@ public class MAHQC extends RecordProcessor {
                 logStatus.warn("unexpected species, line ignored: "+rec.dbObjectID);
                 continue;
             }
-            getSession().incrementCounter("MATCH BY "+rec.dbName, 1);
+            counters.increment("MATCH BY "+rec.dbName);
 
             int geneRgdId = gene.getRgdId();
-            createRatAnnotations(geneRgdId, rec, dBEvidenceCode);
-            loadIntoFULL_ANNOT(rec, rec.fileLine[14], dBEvidenceCode, rec.fileLine[7], rec.fileLine[5], internalRefRGDID, geneRgdId, rec.fileLine);
+            createRatAnnotations(geneRgdId, rec, dBEvidenceCode, counters);
+            loadIntoFULL_ANNOT(rec, rec.fileLine[14], dBEvidenceCode, rec.fileLine[7], rec.fileLine[5], internalRefRGDID, geneRgdId, rec.fileLine, counters);
         }
     }
 
@@ -146,7 +143,7 @@ public class MAHQC extends RecordProcessor {
         return genes;
     }
 
-    Collection<Gene> validateGeneStatus(List<Gene> genes, String dBObjectID, String dbName) throws Exception {
+    Collection<Gene> validateGeneStatus(List<Gene> genes, String dBObjectID, String dbName, CounterPool counters) throws Exception {
 
         Map<Integer, Gene> genesValidated = new HashMap<>();
 
@@ -166,18 +163,18 @@ public class MAHQC extends RecordProcessor {
                 }
                 genesValidated.remove(gene.getRgdId());
                 logInactive.info(dbName + ": RGD_ID:" + gene.getRgdId() + " DBID:" + dBObjectID);
-                getSession().incrementCounter("inactiveCounter", 1);
+                counters.increment("inactiveCounter");
             }
         }
         return genesValidated.values();
     }
 
-    void createRatAnnotations(int geneRgdId, MAHRecord rec, String dBEvidenceCode) throws Exception {
+    void createRatAnnotations(int geneRgdId, MAHRecord rec, String dBEvidenceCode, CounterPool counters) throws Exception {
 
         List<Gene> orthologs = dao.getRatOrthologs(geneRgdId);
         if (orthologs.isEmpty()) {
             logNoRatGene.info(rec.dbName + ": RGDID:" + geneRgdId);
-            getSession().incrementCounter("noRatGeneCounter", 1);
+            counters.increment("noRatGeneCounter");
         }
         else {
             for(Gene ortholog: orthologs ) {
@@ -191,7 +188,7 @@ public class MAHQC extends RecordProcessor {
                     String rGDID4withInfoField = "RGD:" + geneRgdId;
                     String notes = Utils.isStringEmpty(rec.fileLine[7]) ? rec.fileLine[5] : rec.fileLine[7];
 
-                    loadIntoFULL_ANNOT(rec, "RGD", "ISO", rGDID4withInfoField, notes, isoRefRgdId, rGDIDOrthologous, rec.fileLine);
+                    loadIntoFULL_ANNOT(rec, "RGD", "ISO", rGDID4withInfoField, notes, isoRefRgdId, rGDIDOrthologous, rec.fileLine, counters);
                 } else {
                     incrementWrongEvidenceCount(dBEvidenceCode);
                 }
@@ -222,7 +219,7 @@ public class MAHQC extends RecordProcessor {
     }
 
     public void loadIntoFULL_ANNOT(MAHRecord rec, String dataSourceField, String evidenceField, String withInfoField,
-            String notesField, int refRGDIDField, int rGDID, String line[]) throws Exception{
+            String notesField, int refRGDIDField, int rGDID, String line[], CounterPool counters) throws Exception{
 
         // skip if no reference
         if( refRGDIDField==0 ) {
@@ -231,7 +228,13 @@ public class MAHQC extends RecordProcessor {
 
         // skip self-referencing annotations: where WITH_INFO = annotated_object_rgd_id
         if( withInfoField.equals("RGD:"+rGDID) ) {
-            getSession().incrementCounter("skippedSelfRefAnnots", 1);
+            counters.increment("skippedSelfRefAnnots");
+            return;
+        }
+
+        // skip incoming ISO annotations with empty withInfoField
+        if( evidenceField.equals("ISO") && Utils.isStringEmpty(withInfoField) ) {
+            counters.increment("skippedIsoAnnots");
             return;
         }
 
@@ -240,7 +243,7 @@ public class MAHQC extends RecordProcessor {
 
         Annotation annot = new Annotation();
 
-        String qualifier=line[3];
+        String qualifier = Utils.isStringEmpty(line[3]) ? null : line[3].trim();
         String gOID=line[4];
         String dBReference=line[5];
         String aspect=line[8];
@@ -260,7 +263,7 @@ public class MAHQC extends RecordProcessor {
         if( dataSource==null ) {
             dataSource = dataSourceField;
         } else {
-            getSession().incrementCounter("DATA_SRC substitutions", 1);
+            counters.increment("DATA_SRC substitutions");
         }
 
         annot.setAnnotatedObjectRgdId(rGDID);

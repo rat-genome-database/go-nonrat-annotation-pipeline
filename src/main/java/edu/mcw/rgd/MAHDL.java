@@ -1,8 +1,7 @@
 package edu.mcw.rgd;
 
 import edu.mcw.rgd.datamodel.ontology.Annotation;
-import edu.mcw.rgd.pipelines.PipelineRecord;
-import edu.mcw.rgd.pipelines.RecordProcessor;
+import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.Utils;
 import org.apache.log4j.Logger;
 
@@ -11,7 +10,7 @@ import java.util.*;
 /**
  * @author mtutaj
  */
-public class MAHDL extends RecordProcessor {
+public class MAHDL {
 
     protected final Logger logInsert = Logger.getLogger("insert");
     protected final Logger logUpdate = Logger.getLogger("update");
@@ -24,19 +23,19 @@ public class MAHDL extends RecordProcessor {
         this.dao = dao;
     }
 
-    @Override
-    public void process(PipelineRecord pipelineRecord) throws Exception {
-        MAHRecord rec = (MAHRecord) pipelineRecord;
+    public void process(MAHRecord rec) throws Exception {
 
         for( MAHAnnotData ad: rec.annotData ) {
             ad.key = computeAnnotKey(ad.incomingAnnot);
             ad.dbObjectId = rec.dbObjectID;
-            List<MAHAnnotData> annots = incomingAnnots.get(ad.key);
-            if( annots==null ) {
-                annots = new ArrayList<>();
-                incomingAnnots.put(ad.key, annots);
+            synchronized (this) {
+                List<MAHAnnotData> annots = incomingAnnots.get(ad.key);
+                if (annots == null) {
+                    annots = new ArrayList<>();
+                    incomingAnnots.put(ad.key, annots);
+                }
+                annots.add(ad);
             }
-            annots.add(ad);
         }
     }
 
@@ -51,26 +50,19 @@ public class MAHDL extends RecordProcessor {
         return key;
     }
 
+    public void postProcess(CounterPool counters) {
 
-    @Override
-    public void onExit() throws Exception {
-
-        // multi-thread version
-        incomingAnnots.values().parallelStream().forEach( e -> {
-            processAnnotBucket2(e);
+        incomingAnnots.values().parallelStream().forEach( list -> {
+            try {
+                processAnnotBucket(list, counters);
+            }
+            catch(Exception e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
-    void processAnnotBucket2(List<MAHAnnotData> list) {
-        try {
-            processAnnotBucket(list);
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    void processAnnotBucket(List<MAHAnnotData> list) throws Exception {
+    void processAnnotBucket(List<MAHAnnotData> list, CounterPool counters) throws Exception {
         // merge incoming annots: NOTES and XREF_SOURCE
         MAHAnnotData adata = list.get(0);
         Annotation merged = adata.incomingAnnot;
@@ -91,11 +83,11 @@ public class MAHDL extends RecordProcessor {
             }
             String xrefSourceStrNew = Utils.concatenate(xrefSource,"|");
             if( xrefSourceStrNew.length()>4000 ) {
-                getSession().incrementCounter("  TRUNCATED XREF_SOURCE (XREF_SOURCE LENGTH > 4000)", 1);
+                counters.increment("  TRUNCATED XREF_SOURCE (XREF_SOURCE LENGTH > 4000)");
                 // too long merged XREF_SOURCE -- emit existing annotation
                 merged.setXrefSource(xrefSourceStr);
                 merged.setNotes(notesStr);
-                handleAnnot(merged, adata);
+                handleAnnot(merged, adata, counters);
 
                 // start new set of XREF_SOURCE, NOTES
                 xrefSource.clear();
@@ -125,10 +117,10 @@ public class MAHDL extends RecordProcessor {
         // emit annot
         merged.setXrefSource(xrefSourceStr);
         merged.setNotes(notesStr);
-        handleAnnot(merged, adata);
+        handleAnnot(merged, adata, counters);
     }
 
-    void handleAnnot(Annotation a, MAHAnnotData adata) throws Exception {
+    void handleAnnot(Annotation a, MAHAnnotData adata, CounterPool counters) throws Exception {
 
         // clear NOTES if they are the same as XREF_SOURCE
         if( !Utils.isStringEmpty(a.getNotes()) ) {
@@ -140,14 +132,24 @@ public class MAHDL extends RecordProcessor {
         // get matching annot in RGD
         int annotKey = dao.getAnnotationKey(a);
         if( annotKey==0 ) {
+            String msg = adata.db + " " + a.getTermAcc() + " [" + a.getTerm() + "] RGD:" + a.getAnnotatedObjectRgdId() + " RefRGD:" + a.getRefRgdId() + " " + adata.dbObjectId + a.getEvidence();
+            if( !Utils.isStringEmpty(a.getWithInfo()) ) {
+                msg += " W:" + a.getWithInfo();
+            }
+            if( a.getQualifier()!=null ) {
+                msg += " Q:" + a.getQualifier();
+            }
+            if( a.getXrefSource()!=null ) {
+                msg += " XREFSRC:" + a.getXrefSource();
+            }
+            logInsert.info(msg);
             dao.insertAnnotation(a);
-            logInsert.info(adata.db + ": FAKey:" + a.getKey() + " " + a.getTermAcc() + " term:" + a.getTerm() + " RGDID:" + a.getAnnotatedObjectRgdId() + " RefRGDID:" + a.getRefRgdId() + " " + adata.dbObjectId + " Ev:" + a.getEvidence() + " W:" + a.getWithInfo());
-            getSession().incrementCounter("insertedAnnotCount", 1);
+            counters.increment("insertedAnnotCount");
         }
         else {
+            logUpdate.info(adata.db + ": FAK:" + annotKey + " " + a.getTermAcc() + " RGD:" + a.getAnnotatedObjectRgdId() + " RefRGD:" + a.getRefRgdId() + " " + a.getEvidence() + " W:" + a.getWithInfo());
             dao.updateAnnotationNotes(annotKey, a.getNotes());
-            logUpdate.info(adata.db + ": FAKey:" + annotKey + " " + a.getTermAcc() + " RGDID:" + a.getAnnotatedObjectRgdId() + " RefRGDID:" + a.getRefRgdId() + " " + a.getEvidence() + " W:" + a.getWithInfo());
-            getSession().incrementCounter("matchingAnnotCount", 1);
+            counters.increment("matchingAnnotCount");
         }
     }
 }

@@ -1,7 +1,7 @@
 package edu.mcw.rgd;
 
 import edu.mcw.rgd.datamodel.SpeciesType;
-import edu.mcw.rgd.pipelines.*;
+import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.FileDownloader;
 import edu.mcw.rgd.process.Utils;
 import org.apache.log4j.Logger;
@@ -43,8 +43,6 @@ public class MouseAndHumanGoAnnotationPipeline {
     private int issRefRgdId;
     private int createdBy;
     private String version;
-    private int pipelineQueueSize;
-    private int qcThreadCount;
 
     DAO dao = new DAO();
     Map<Integer,String> mapRgdIdStatus;
@@ -63,18 +61,12 @@ public class MouseAndHumanGoAnnotationPipeline {
         MouseAndHumanGoAnnotationPipeline loader = (MouseAndHumanGoAnnotationPipeline) (bf.getBean("loader"));
         loader.logStatus.info("--- "+loader.getVersion()+" ---");
 
-        for( int i=0; i<args.length; i++ ) {
-            switch(args[i]) {
-                case "--qcThreadCount":
-                    int qcThreadCount = Integer.parseInt(args[++i]);
-                    if( qcThreadCount>0 ) {
-                        loader.setQcThreadCount(qcThreadCount);
-                    }
-            }
+        try {
+            loader.run();
+        } catch(Exception e) {
+            Utils.printStackTrace(e, loader.logStatus);
+            throw e;
         }
-        loader.logStatus.info(" -- QC_THREAD_COUNT = "+loader.getQcThreadCount());
-
-        loader.run();
     }
 
     public void run() throws Exception{
@@ -120,7 +112,7 @@ public class MouseAndHumanGoAnnotationPipeline {
 
         // show total elapsed time
         long endTime = System.currentTimeMillis();
-        logStatus.info("ELAPSED TIME: "+Utils.formatElapsedTime(startTime, endTime));
+        logStatus.info("OK   -- ELAPSED TIME: "+Utils.formatElapsedTime(startTime, endTime));
     }
 
     public void processFile(List<String> fileNames, List<String> fromDatabases, int internalRefRGDID, int speciesTypeKey) throws Exception{
@@ -129,60 +121,65 @@ public class MouseAndHumanGoAnnotationPipeline {
         qc.init(dao, mapRgdIdStatus, internalRefRGDID, createdBy, issRefRgdId, speciesTypeKey);
         MAHDL dl = new MAHDL(dao);
 
-        PipelineManager manager = new PipelineManager();
-        manager.addPipelineWorkgroup(parser, "PP", 1, getPipelineQueueSize());
-        manager.addPipelineWorkgroup(qc, "QC", getQcThreadCount(), getPipelineQueueSize());
-        manager.addPipelineWorkgroup(dl, "DL", 1, getPipelineQueueSize());
+        CounterPool counters = new CounterPool();
 
-        // because we are doing annotation QC and loading in parallel thread, conflicts could happen
-        // resulting in an attempt to insert duplicate annotations;
-        // we do allow for up-to 100000 duplicate annotations to be resolved later
-        manager.getSession().setAllowedExceptions(100000);
+        List<MAHRecord> records = parser.process();
 
-        // violations of unique key during inserts of annotations will be handled silently,
-        // without writing anything to the logs
-        manager.getSession().registerUserException(new String[]{
-                "FULL_ANNOT_MULT_UC", "DataIntegrityViolationException", "SQLIntegrityConstraintViolationException"});
+        // randomize incoming records to minimize risk of conflicts
+        Collections.shuffle(records);
 
-        manager.run();
+        records.parallelStream().forEach( rec -> {
 
-        dumpStats(manager, speciesTypeKey);
+            try {
+                qc.process(rec, counters);
+                dl.process(rec);
+            } catch(Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        dl.postProcess(counters);
+
+        dumpStats(counters, speciesTypeKey);
     }
 
-    void dumpStats(PipelineManager manager, int speciesTypeKey) {
+    void dumpStats(CounterPool counters, int speciesTypeKey) {
 
-        PipelineSession session = manager.getSession();
         String speciesType = SpeciesType.getCommonName(speciesTypeKey);
 
-        logStatus.info(session.getCounterValue("highLevelGoTerm")+" " + speciesType + " lines with high level GO terms skipped");
+        logStatus.info(counters.get("highLevelGoTerm")+" " + speciesType + " lines with high level GO terms skipped");
 
-        int counter = session.getCounterValue("IPIAnnotToCatalyticActivityTerm");
+        int counter = counters.get("IPIAnnotToCatalyticActivityTerm");
         if( counter!=0 )
             logStatus.info(counter+" " + speciesType + " lines with IPI annotations to catalytic activity skipped");
 
-        logStatus.info(session.getCounterValue("unmatchedCounter")+" " + speciesType + " IDs didn't match to a gene in RGD");
-        logStatus.info(session.getCounterValue("noRatGeneCounter")+" " + speciesType + " IDs without rat ortholog in RGD");
-        logStatus.info(session.getCounterValue("inactiveCounter") + " inactive RGDID with " + speciesType + " ID");
-        logStatus.info(session.getCounterValue("matchingAnnotCount")+" " + speciesType + " annotations match RGD");
+        logStatus.info(counters.get("unmatchedCounter")+" " + speciesType + " IDs didn't match to a gene in RGD");
+        logStatus.info(counters.get("noRatGeneCounter")+" " + speciesType + " IDs without rat ortholog in RGD");
+        logStatus.info(counters.get("inactiveCounter") + " inactive RGDID with " + speciesType + " ID");
+        logStatus.info(counters.get("matchingAnnotCount")+" " + speciesType + " annotations match RGD");
 
-        counter = session.getCounterValue("insertedAnnotCount");
+        counter = counters.get("insertedAnnotCount");
         if( counter!=0 )
             logStatus.info(counter+" " + speciesType + " new annotations inserted");
 
-        counter = session.getCounterValue("notFoundInRgdGoTermCount");
+        counter = counters.get("notFoundInRgdGoTermCount");
         if( counter!=0 )
             logStatus.info(counter+" " + speciesType + " incoming GO terms not found in RGD database");
 
-        counter = session.getCounterValue("skippedSelfRefAnnots");
+        counter = counters.get("skippedSelfRefAnnots");
         if( counter!=0 )
             logStatus.info(counter+" " + speciesType + " skipped self-referencing annotations");
 
-        counter = session.getCounterValue("DATA_SRC substitutions");
+        counter = counters.get("skippedIsoAnnots");
+        if( counter!=0 ) {
+            logStatus.info(counter + " " + speciesType + " skipped ISO annotations with empty WITH_INFO field");
+        }
+
+        counter = counters.get("DATA_SRC substitutions");
         if( counter!=0 )
             logStatus.info(counter+" " + speciesType + " DATA_SRC substitutions");
 
         // dump all counters to exception log
-        manager.dumpCounters(logException);
+        logException.info(counters.dumpAlphabetically());
     }
 
     void dumpCountsForRefRgdIds() throws Exception {
@@ -303,22 +300,6 @@ public class MouseAndHumanGoAnnotationPipeline {
 
     public List<String> getMgiFiles() {
         return mgiFiles;
-    }
-
-    public void setPipelineQueueSize(int pipelineQueueSize) {
-        this.pipelineQueueSize = pipelineQueueSize;
-    }
-
-    public int getPipelineQueueSize() {
-        return pipelineQueueSize;
-    }
-
-    public void setQcThreadCount(int qcThreadCount) {
-        this.qcThreadCount = qcThreadCount;
-    }
-
-    public int getQcThreadCount() {
-        return qcThreadCount;
     }
 
     public void setQc(MAHQC qc) {

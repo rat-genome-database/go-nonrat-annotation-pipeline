@@ -1,3 +1,7 @@
+Dec 17, 2019
+  replaced old dependency rgd-pipelines-1.0.6.jar with java streams
+  QC: added checking for incoming ISO annotations without WITH_INFO field
+
 Nov 27, 2019
   removed unused jar dependency
   

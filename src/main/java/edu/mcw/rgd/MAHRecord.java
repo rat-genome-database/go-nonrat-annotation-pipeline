@@ -1,7 +1,5 @@
 package edu.mcw.rgd;
 
-import edu.mcw.rgd.pipelines.PipelineRecord;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +7,7 @@ import java.util.List;
  * @author mtutaj
  * represents a line from source file, to be processed through various stages of the pipeline
  */
-public class MAHRecord extends PipelineRecord {
+public class MAHRecord {
 
     String[] fileLine;
     String dbName;
