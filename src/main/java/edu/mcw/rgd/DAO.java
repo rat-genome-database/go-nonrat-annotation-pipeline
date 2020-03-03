@@ -142,11 +142,16 @@ public class DAO  {
      *
      * @param annot Annotation object representing column values
      * @throws Exception
-     * @return value of new full annot key
      */
-    public int insertAnnotation(Annotation annot) throws Exception{
+    public void insertAnnotation(Annotation annot) throws Exception{
 
-        return annotationDAO.insertAnnotation(annot);
+        try {
+            annotationDAO.insertAnnotation(annot);
+        } catch(Exception e) {
+            Logger logStatus = Logger.getLogger("status");
+            logStatus.warn("INSERT PROBLEM for "+annot.dump("|"));
+            throw e;
+        }
     }
 
     public int updateAnnotationNotes(int fullAnnotKey, String notes) throws Exception{

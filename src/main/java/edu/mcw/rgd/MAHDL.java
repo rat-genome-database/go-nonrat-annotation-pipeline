@@ -132,7 +132,7 @@ public class MAHDL {
         // get matching annot in RGD
         int annotKey = dao.getAnnotationKey(a);
         if( annotKey==0 ) {
-            String msg = adata.db + " " + a.getTermAcc() + " [" + a.getTerm() + "] RGD:" + a.getAnnotatedObjectRgdId() + " RefRGD:" + a.getRefRgdId() + " " + adata.dbObjectId + a.getEvidence();
+            String msg = adata.db + " " + a.getTermAcc() + " [" + a.getTerm() + "] RGD:" + a.getAnnotatedObjectRgdId() + " RefRGD:" + a.getRefRgdId() + " " + adata.dbObjectId + " E:"+a.getEvidence();
             if( !Utils.isStringEmpty(a.getWithInfo()) ) {
                 msg += " W:" + a.getWithInfo();
             }
