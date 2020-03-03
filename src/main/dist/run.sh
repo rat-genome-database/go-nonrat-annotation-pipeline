@@ -17,7 +17,7 @@ java -Dspring.config=$HOMEDIR/../properties/default_db2.xml \
   -jar lib/$APPNAME.jar "$@" > run.log 2>&1
 
 
-echo "" >> $HOMEDIR/log/status_summary.log
+echo "" >> $HOMEDIR/logs/status_summary.log
 echo "Unprocessed Source Databases (count db):" >> $HOMEDIR/logs/status_summary.log
 
 TODAY=`date +%Y%m%d`
