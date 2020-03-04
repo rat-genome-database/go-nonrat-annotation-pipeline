@@ -1,3 +1,7 @@
+Mar 04, 2020
+  improved handling of obsolete annotations: if net annot drop is greater than 5%, then abort deletions and report it
+    (previously deletion of obsolete annotations was aborted when to-be-deleted annotation count was greater than 5% of total annotation count)
+
 Mar 03, 2020
   improved reporting of exceptions
 

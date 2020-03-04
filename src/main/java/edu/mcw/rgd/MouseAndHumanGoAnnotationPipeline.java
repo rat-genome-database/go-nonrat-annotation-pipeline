@@ -204,6 +204,8 @@ public class MouseAndHumanGoAnnotationPipeline {
 
         long time0 = System.currentTimeMillis();
 
+        int count0 = dao.getCountOfAnnotationForRefRgdId(refRgdId);
+
         if( fileNames==null ) {
             // chinchilla does not have any external source files
             processFile(null, null, 0, speciesTypeKey);
@@ -217,7 +219,7 @@ public class MouseAndHumanGoAnnotationPipeline {
         String speciesName = SpeciesType.getCommonName(speciesTypeKey);
 
         // delete annotations not updated/inserted by the pipeline
-        int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), staleAnnotCutoffDate, logStatus, getStaleAnnotDeleteThreshold(), refRgdId);
+        int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), staleAnnotCutoffDate, logStatus, getStaleAnnotDeleteThreshold(), refRgdId, count0);
         if( annotsDeleted!=0 ) {
             logStatus.info(annotsDeleted + " " + speciesName + " STALE ANNOTATIONS DELETED");
         }

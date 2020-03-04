@@ -161,11 +161,12 @@ public class DAO  {
 
     /**
      * delete annotations older than passed in date;
-     * deleted annotations are logged in the file 'deleted.log'
+     * deleted annotations are logged in the file 'deleted.log';
+     * if the net annot drop is greater than 5% threshold, then abort the deletions and report it
      * @return number of rows affected
      * @throws Exception on spring framework dao failure
      */
-    public int deleteAnnotations(int createdBy, Date dt, Logger logStatus, String deleteThresholdStr, int refRgdId) throws Exception{
+    public int deleteAnnotations(int createdBy, Date dt, Logger logStatus, String deleteThresholdStr, int refRgdId, int initialAnnotCount) throws Exception{
 
         // extract delete threshold in percent
         int percentPos = deleteThresholdStr.indexOf('%');
@@ -180,7 +181,10 @@ public class DAO  {
         }
         int annotsForDeleteCount = annotsForDelete.size();
         int annotsForDeleteThreshold = (deleteThreshold * currentAnnotCount) / 100; // 5% delete threshold
-        if( annotsForDeleteCount > annotsForDeleteThreshold ) {
+
+        int newAnnotCount = currentAnnotCount - annotsForDeleteCount;
+        if( initialAnnotCount - newAnnotCount > annotsForDeleteThreshold ) {
+
             logStatus.warn(" STALE ANNOTATIONS DELETE THRESHOLD ("+deleteThresholdStr+") -- "+annotsForDeleteThreshold);
             logStatus.warn(" STALE ANNOTATIONS TAGGED FOR DELETE     -- "+annotsForDeleteCount);
             logStatus.warn(" STALE ANNOTATIONS DELETE THRESHOLD ("+deleteThresholdStr+") EXCEEDED -- no annotations deleted");
