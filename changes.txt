@@ -1,3 +1,6 @@
+Mar 17, 2020
+  mouse GO annots are now downloaded from daily MGI file
+
 Mar 04, 2020
   improved handling of obsolete annotations: if net annot drop is greater than 5%, then abort deletions and report it
     (previously deletion of obsolete annotations was aborted when to-be-deleted annotation count was greater than 5% of total annotation count)

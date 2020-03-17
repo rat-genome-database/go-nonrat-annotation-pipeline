@@ -1,12 +1,13 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.MouseAndHumanGoAnnotationPipeline">
-        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Mar 04, 2020" />
+        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Mar 17, 2020" />
         <property name="localDir" value="data"/>
 
         <property name="mgiFiles">
             <list>
-                <value>ftp://ftp.geneontology.org/pub/go/gene-associations/gene_association.mgi.gz</value>
+           <!--     <value>ftp://ftp.geneontology.org/pub/go/gene-associations/gene_association.mgi.gz</value>-->
+                <value>http://www.informatics.jax.org/downloads/reports/gene_association.mgi.gz</value>
             </list>
         </property>
         <property name="goaMouseDbSources">
