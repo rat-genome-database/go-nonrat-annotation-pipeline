@@ -1,7 +1,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.MouseAndHumanGoAnnotationPipeline">
-        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Mar 17, 2020" />
+        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Jun 26, 2020" />
         <property name="localDir" value="data"/>
 
         <property name="mgiFiles">

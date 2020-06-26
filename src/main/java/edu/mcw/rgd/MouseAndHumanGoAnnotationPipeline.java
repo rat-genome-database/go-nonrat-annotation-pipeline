@@ -9,6 +9,8 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.FileSystemResource;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.*;
@@ -81,7 +83,7 @@ public class MouseAndHumanGoAnnotationPipeline {
         mapRgdIdStatus = dao.getStatusForGeneRgdIds();
 
         // show current counts
-        dumpCountsForRefRgdIds();
+        Map<Integer,Integer> refCounts = getCountsForRefRgdIds();
 
         // process the data
         downloadAndProcessFiles(getGoaHumanDbSources(), getGoaHumanRefRgdId(), getGoaHumanFiles(), SpeciesType.HUMAN);
@@ -108,7 +110,7 @@ public class MouseAndHumanGoAnnotationPipeline {
         }
 
         // show current counts
-        dumpCountsForRefRgdIds();
+        dumpCountsForRefRgdIds(refCounts);
 
         // show total elapsed time
         long endTime = System.currentTimeMillis();
@@ -182,23 +184,44 @@ public class MouseAndHumanGoAnnotationPipeline {
         logException.info(counters.dumpAlphabetically());
     }
 
-    void dumpCountsForRefRgdIds() throws Exception {
+    Map<Integer,Integer> getCountsForRefRgdIds() throws Exception {
+
+        Map<Integer,Integer> counts = new HashMap<>();
+
         // show current counts
-        int count_0 = dao.getCountOfAnnotationForRefRgdId(getMgiRefRgdId());
-        logStatus.info("COUNT REF_RGD_ID:"+getMgiRefRgdId()+" "+count_0+"  -- MGI");
+        counts.put(getMgiRefRgdId(), dao.getCountOfAnnotationForRefRgdId(getMgiRefRgdId()));
+        counts.put(getGoaHumanRefRgdId(), dao.getCountOfAnnotationForRefRgdId(getGoaHumanRefRgdId()));
+        counts.put(getGoaDogRefRgdId(), dao.getCountOfAnnotationForRefRgdId(getGoaDogRefRgdId()));
+        counts.put(getGoaPigRefRgdId(), dao.getCountOfAnnotationForRefRgdId(getGoaPigRefRgdId()));
+        counts.put(getIssRefRgdId(), dao.getCountOfAnnotationForRefRgdId(getIssRefRgdId()));
 
-        int count_1 = dao.getCountOfAnnotationForRefRgdId(getGoaHumanRefRgdId());
-        logStatus.info("COUNT REF_RGD_ID:" + getGoaHumanRefRgdId() + " " + count_1+"  -- HUMAN");
-
-        int count_2 = dao.getCountOfAnnotationForRefRgdId(getGoaDogRefRgdId());
-        logStatus.info("COUNT REF_RGD_ID:" + getGoaDogRefRgdId() + " " + count_2+"  -- DOG");
-
-        int count_3 = dao.getCountOfAnnotationForRefRgdId(getGoaPigRefRgdId());
-        logStatus.info("COUNT REF_RGD_ID:" + getGoaPigRefRgdId() + " " + count_3+"  -- PIG");
-
-        int count_ISO = dao.getCountOfAnnotationForRefRgdId(getIssRefRgdId());
-        logStatus.info("COUNT REF_RGD_ID:" + getIssRefRgdId() + " " + count_ISO+"  -- RAT ISO");
+        return counts;
     }
+
+    void dumpCountsForRefRgdIds(Map<Integer,Integer> counts) throws Exception {
+        // show current counts
+        int newCount = dao.getCountOfAnnotationForRefRgdId(getMgiRefRgdId());
+        dumpCount(counts.get(getMgiRefRgdId()), newCount, "COUNT REF_RGD_ID:"+getMgiRefRgdId()+"  [MGI]  ");
+
+        newCount = dao.getCountOfAnnotationForRefRgdId(getGoaHumanRefRgdId());
+        dumpCount(counts.get(getGoaHumanRefRgdId()), newCount, "COUNT REF_RGD_ID:" + getGoaHumanRefRgdId() + "  [HUMAN]  ");
+
+        newCount = dao.getCountOfAnnotationForRefRgdId(getGoaDogRefRgdId());
+        dumpCount(counts.get(getGoaDogRefRgdId()), newCount,"COUNT REF_RGD_ID:" + getGoaDogRefRgdId() + "  [DOG]  ");
+
+        newCount = dao.getCountOfAnnotationForRefRgdId(getGoaPigRefRgdId());
+        dumpCount(counts.get(getGoaPigRefRgdId()), newCount,"COUNT REF_RGD_ID:" + getGoaPigRefRgdId() + "  [PIG]  ");
+
+        newCount = dao.getCountOfAnnotationForRefRgdId(getIssRefRgdId());
+        dumpCount(counts.get(getIssRefRgdId()), newCount,"COUNT REF_RGD_ID:" + getIssRefRgdId() + "  [RAT ISO]  ");
+    }
+
+    void dumpCount(int oldCount, int newCount, String info) {
+        int diffCount = newCount - oldCount;
+        String diffCountStr = diffCount!=0 ? "     difference: "+ _plusMinusNF.format(diffCount) : "     no changes";
+        logStatus.info(info+": "+Utils.formatThousands(newCount)+diffCountStr);
+    }
+    private NumberFormat _plusMinusNF = new DecimalFormat(" +###,###,###; -###,###,###");
 
     public void downloadAndProcessFiles(List<String> databases, int refRgdId, List<String> fileNames, int speciesTypeKey) throws Exception {
 
