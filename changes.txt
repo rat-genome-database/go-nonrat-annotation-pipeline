@@ -1,3 +1,6 @@
+Oct 23, 2020
+  tuned up recipients of summary email
+
 Jun 26, 2020
   improved summary email
 
