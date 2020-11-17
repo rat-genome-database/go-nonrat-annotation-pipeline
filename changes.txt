@@ -1,3 +1,6 @@
+Nov 16, 2020
+  implemented loading of new annotation fields: ANNOTATION_EXTENSION, GENE_PRODUCT_FORM_ID
+
 Oct 23, 2020
   tuned up recipients of summary email
 

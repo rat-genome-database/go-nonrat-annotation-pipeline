@@ -288,6 +288,8 @@ public class MAHQC {
         annot.setCreatedBy(createdBy);
         annot.setLastModifiedBy(createdBy);
         annot.setXrefSource(dBReference);
+        annot.setAnnotationExtension(line[15]);
+        annot.setGeneProductFormId(line[16]);
 
         annotData.incomingAnnot = annot;
         rec.annotData.add(annotData);

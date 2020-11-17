@@ -137,6 +137,10 @@ public class DAO  {
         return annotationDAO.getAnnotationKey(annot);
     }
 
+    public Annotation getAnnotation(int key) throws Exception {
+        return annotationDAO.getAnnotation(key);
+    }
+
     /**
      * Insert new annotation into FULL_ANNOT table; full_annot_key, creation_date and last_modified_date will be set
      *
@@ -157,6 +161,15 @@ public class DAO  {
     public int updateAnnotationNotes(int fullAnnotKey, String notes) throws Exception{
 
         return annotationDAO.updateAnnotationNotes(fullAnnotKey, notes);
+    }
+
+    public int updateAnnotEx(int key, String notes, String annotExt, String geneProductFormId) throws Exception {
+        String sql = "UPDATE full_annot SET notes=?,annotation_extension=?,gene_product_form_id=?,last_modified_date=SYSDATE WHERE full_annot_key=?";
+        return annotationDAO.update(sql, notes, annotExt, geneProductFormId, key);
+    }
+
+    public int updateLastModifiedDateForAnnotation(int annotKey) throws Exception{
+        return annotationDAO.updateLastModified(annotKey);
     }
 
     /**

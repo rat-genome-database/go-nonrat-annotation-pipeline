@@ -13,7 +13,8 @@ import java.util.*;
 public class MAHDL {
 
     protected final Logger logInsert = Logger.getLogger("insert");
-    protected final Logger logUpdate = Logger.getLogger("update");
+    protected final Logger logUpdated = Logger.getLogger("updated");
+    protected final Logger logUpToDate = Logger.getLogger("upToDate");
 
     private DAO dao;
 
@@ -23,7 +24,7 @@ public class MAHDL {
         this.dao = dao;
     }
 
-    public void process(MAHRecord rec) throws Exception {
+    public void process(MAHRecord rec) {
 
         for( MAHAnnotData ad: rec.annotData ) {
             ad.key = computeAnnotKey(ad.incomingAnnot);
@@ -147,9 +148,33 @@ public class MAHDL {
             counters.increment("insertedAnnotCount");
         }
         else {
-            logUpdate.info(adata.db + ": FAK:" + annotKey + " " + a.getTermAcc() + " RGD:" + a.getAnnotatedObjectRgdId() + " RefRGD:" + a.getRefRgdId() + " " + a.getEvidence() + " W:" + a.getWithInfo());
-            dao.updateAnnotationNotes(annotKey, a.getNotes());
-            counters.increment("matchingAnnotCount");
+
+            // check if you need to update notes, annot ext
+            Annotation annotInRgd = dao.getAnnotation(annotKey);
+            boolean changed = !Utils.stringsAreEqual(annotInRgd.getNotes(), a.getNotes())
+                    || !Utils.stringsAreEqual(annotInRgd.getAnnotationExtension(), a.getAnnotationExtension())
+                    || !Utils.stringsAreEqual(annotInRgd.getGeneProductFormId(), a.getGeneProductFormId());
+
+            if( changed ) {
+                String msg = adata.db + ": FAK:" + annotKey + " " + a.getTermAcc() + " RGD:" + a.getAnnotatedObjectRgdId() + " RefRGD:" + a.getRefRgdId() + " " + a.getEvidence() + " W:" + a.getWithInfo();
+                if( !Utils.stringsAreEqual(annotInRgd.getAnnotationExtension(), a.getAnnotationExtension()) ) {
+                    msg += "\n   ANNOT_EXT  OLD["+Utils.NVL(annotInRgd.getAnnotationExtension(),"")+"]  NEW["+a.getAnnotationExtension()+"]";
+                }
+                if( !Utils.stringsAreEqual(annotInRgd.getGeneProductFormId(), a.getGeneProductFormId()) ) {
+                    msg += "\n   GENE_FORM  OLD["+Utils.NVL(annotInRgd.getGeneProductFormId(),"")+"]  NEW["+a.getGeneProductFormId()+"]";
+                }
+                if( !Utils.stringsAreEqual(annotInRgd.getNotes(), a.getNotes()) ) {
+                    msg += "\n   NOTES  OLD["+Utils.NVL(annotInRgd.getNotes(),"")+"]  NEW["+a.getNotes()+"]";
+                }
+                logUpdated.info(msg);
+
+                dao.updateAnnotEx(annotKey, a.getNotes(), a.getAnnotationExtension(), a.getGeneProductFormId());
+                counters.increment("updatedAnnotCount");
+            } else {
+                dao.updateLastModifiedDateForAnnotation(annotKey);
+                logUpToDate.info(adata.db + ": FAK:" + annotKey + " " + a.getTermAcc() + " RGD:" + a.getAnnotatedObjectRgdId() + " RefRGD:" + a.getRefRgdId() + " " + a.getEvidence() + " W:" + a.getWithInfo());
+                counters.increment("matchingAnnotCount");
+            }
         }
     }
 }

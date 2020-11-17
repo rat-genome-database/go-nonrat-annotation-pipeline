@@ -41,7 +41,7 @@ public class MAHParser {
             Scanner s = new Scanner(gis);
             while (s.hasNextLine()) {
                 String line = s.nextLine();
-                String[] lineCols = line.split("(\\t)");
+                String[] lineCols = line.split("(\\t)", -1);
                 String dbName = lineCols[0];
                 // skip lines that do not begin with db name (f.e. comment lines start with '!')
                 if (!fromDatabases.contains(dbName)) {
@@ -67,7 +67,7 @@ public class MAHParser {
         List<Annotation> goAnnots = dao.getManualGoAnnotsForChinchilla();
         for( Annotation annot: goAnnots ) {
             // turn an annot into a GAF line
-            String[] lineCols = new String[15];
+            String[] lineCols = new String[17];
             lineCols[0] = annot.getDataSrc(); // DB
             lineCols[1] = annot.getAnnotatedObjectRgdId().toString(); // DB Object ID
             lineCols[2] = annot.getObjectSymbol(); // DB Object Symbol
@@ -86,6 +86,8 @@ public class MAHParser {
             lineCols[12] = taxon;
             lineCols[13] = sdt.format(annot.getCreatedDate());
             lineCols[14] = "RGD"; // Assigned By
+            lineCols[15] = annot.getAnnotationExtension();
+            lineCols[16] = annot.getGeneProductFormId();
 
             MAHRecord rec = new MAHRecord();
             rec.fileLine = lineCols;

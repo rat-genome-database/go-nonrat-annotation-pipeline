@@ -157,11 +157,15 @@ public class MouseAndHumanGoAnnotationPipeline {
         logStatus.info(counters.get("unmatchedCounter")+" " + speciesType + " IDs didn't match to a gene in RGD");
         logStatus.info(counters.get("noRatGeneCounter")+" " + speciesType + " IDs without rat ortholog in RGD");
         logStatus.info(counters.get("inactiveCounter") + " inactive RGDID with " + speciesType + " ID");
-        logStatus.info(counters.get("matchingAnnotCount")+" " + speciesType + " annotations match RGD");
+        logStatus.info(counters.get("matchingAnnotCount")+" " + speciesType + " annotations match RGD -- updated LAST_MODIFIED_DATE");
 
         counter = counters.get("insertedAnnotCount");
         if( counter!=0 )
             logStatus.info(counter+" " + speciesType + " new annotations inserted");
+
+        counter = counters.get("updatedAnnotCount");
+        if( counter!=0 )
+            logStatus.info(counter+" " + speciesType + " annotations updated");
 
         counter = counters.get("notFoundInRgdGoTermCount");
         if( counter!=0 )
