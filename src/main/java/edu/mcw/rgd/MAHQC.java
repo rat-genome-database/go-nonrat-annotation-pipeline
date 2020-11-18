@@ -90,7 +90,7 @@ public class MAHQC {
 
             int geneRgdId = gene.getRgdId();
             createRatAnnotations(geneRgdId, rec, dBEvidenceCode, counters);
-            loadIntoFULL_ANNOT(rec, rec.fileLine[14], dBEvidenceCode, rec.fileLine[7], rec.fileLine[5], internalRefRGDID, geneRgdId, rec.fileLine, counters);
+            loadIntoFULL_ANNOT(rec, rec.fileLine[14], dBEvidenceCode, rec.fileLine[7], rec.fileLine[5], internalRefRGDID, geneRgdId, counters);
         }
     }
 
@@ -188,7 +188,7 @@ public class MAHQC {
                     String rGDID4withInfoField = "RGD:" + geneRgdId;
                     String notes = Utils.isStringEmpty(rec.fileLine[7]) ? rec.fileLine[5] : rec.fileLine[7];
 
-                    loadIntoFULL_ANNOT(rec, "RGD", "ISO", rGDID4withInfoField, notes, isoRefRgdId, rGDIDOrthologous, rec.fileLine, counters);
+                    loadIntoFULL_ANNOT(rec, "RGD", "ISO", rGDID4withInfoField, notes, isoRefRgdId, rGDIDOrthologous, counters);
                 } else {
                     incrementWrongEvidenceCount(dBEvidenceCode);
                 }
@@ -219,7 +219,7 @@ public class MAHQC {
     }
 
     public void loadIntoFULL_ANNOT(MAHRecord rec, String dataSourceField, String evidenceField, String withInfoField,
-            String notesField, int refRGDIDField, int rGDID, String line[], CounterPool counters) throws Exception{
+            String notesField, int refRGDIDField, int rGDID, CounterPool counters) throws Exception{
 
         // skip if no reference
         if( refRGDIDField==0 ) {
@@ -243,10 +243,10 @@ public class MAHQC {
 
         Annotation annot = new Annotation();
 
-        String qualifier = Utils.isStringEmpty(line[3]) ? null : line[3].trim();
-        String gOID=line[4];
-        String dBReference=line[5];
-        String aspect=line[8];
+        String qualifier = Utils.isStringEmpty(rec.fileLine[3]) ? null : rec.fileLine[3].trim();
+        String gOID=rec.fileLine[4];
+        String dBReference=rec.fileLine[5];
+        String aspect=rec.fileLine[8];
 
         // read term name from ont_terms table
         Term term = dao.getTermByAccId(gOID);
@@ -288,8 +288,8 @@ public class MAHQC {
         annot.setCreatedBy(createdBy);
         annot.setLastModifiedBy(createdBy);
         annot.setXrefSource(dBReference);
-        annot.setAnnotationExtension(line[15]);
-        annot.setGeneProductFormId(line[16]);
+        annot.setAnnotationExtension(rec.fileLine[15]);
+        annot.setGeneProductFormId(rec.fileLine[16]);
 
         annotData.incomingAnnot = annot;
         rec.annotData.add(annotData);

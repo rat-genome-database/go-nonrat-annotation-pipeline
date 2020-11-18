@@ -2,14 +2,12 @@ package edu.mcw.rgd;
 
 import edu.mcw.rgd.datamodel.SpeciesType;
 import edu.mcw.rgd.datamodel.ontology.Annotation;
+import edu.mcw.rgd.process.Utils;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Created by mtutaj on 3/2/2018.
@@ -36,12 +34,17 @@ public class MAHParser {
 
         List<MAHRecord> records = new ArrayList<>();
         for( String fileName: fileNames ) {
-            InputStream fis = new FileInputStream(fileName);
-            GZIPInputStream gis = new GZIPInputStream(fis);
-            Scanner s = new Scanner(gis);
-            while (s.hasNextLine()) {
-                String line = s.nextLine();
-                String[] lineCols = line.split("(\\t)", -1);
+            BufferedReader in = Utils.openReader(fileName);
+            String line;
+            while( (line=in.readLine())!=null ) {
+                // skip comment lines
+                if( line.startsWith("!") ) {
+                    continue;
+                }
+
+                String line2 = line.replace("MGI:MGI:", "MGI:");
+
+                String[] lineCols = line2.split("(\\t)", -1);
                 String dbName = lineCols[0];
                 // skip lines that do not begin with db name (f.e. comment lines start with '!')
                 if (!fromDatabases.contains(dbName)) {
@@ -53,7 +56,7 @@ public class MAHParser {
                 rec.dbName = dbName;
                 records.add(rec);
             }
-            fis.close();
+            in.close();
         }
         return records;
     }

@@ -1,3 +1,6 @@
+Nov 18, 2020
+  MGI:MGI:xxxxxxx is replaced with MGI:xxxxxxxx when loading
+
 Nov 16, 2020
   implemented loading of new annotation fields: ANNOTATION_EXTENSION, GENE_PRODUCT_FORM_ID
 

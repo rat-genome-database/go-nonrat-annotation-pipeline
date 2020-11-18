@@ -14,4 +14,5 @@ Logic notes:
 3) NOTES field is set only to information that does not appear in XREF_SOURCE field
 4) if XREF_SOURCE field contains multiple PMIDs, NOTES field allows to reconstruct the original associations between database and PMID
 5) implemented 5% delete threshold for stale annotations
+6) MGI:MGI:xxxxxxx is replaced with MGI:xxxxxxxx
 
