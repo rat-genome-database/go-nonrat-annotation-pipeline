@@ -232,8 +232,22 @@ public class MAHQC {
             return;
         }
 
+        // ISO annotations: move GENE_PRODUCT_FORM_ID into WITH field
+        String withInfo = withInfoField;
+        String geneProductFormId = rec.fileLine[16];
+        if( evidenceField.equals("ISO") && !Utils.isStringEmpty(geneProductFormId) ) {
+            // move GENE_PRODUCT_FORM_ID into WITH field
+            if( Utils.isStringEmpty(withInfo) ) {
+                withInfo = geneProductFormId;
+            } else {
+                withInfo = withInfo+"|"+geneProductFormId;
+            }
+            geneProductFormId = "";
+            counters.increment("movedGeneProductFormIdIntoWithInfo");
+        }
+
         // skip incoming ISO annotations with empty withInfoField
-        if( evidenceField.equals("ISO") && Utils.isStringEmpty(withInfoField) ) {
+        if( evidenceField.equals("ISO") && Utils.isStringEmpty(withInfo) ) {
             counters.increment("skippedIsoAnnots");
             return;
         }
@@ -279,7 +293,7 @@ public class MAHQC {
 
         annot.setRefRgdId(refRGDIDField);// 2290270 for mouse, 2290271 for human during annotation, 1624291 for Rat ISO
         annot.setEvidence(evidenceField);//evidenceCode for annotation, ISO for Rat ISO
-        annot.setWithInfo(withInfoField);//with for annotation, RGDID of the mouse/human gene for Rat ISO
+        annot.setWithInfo(withInfo);//with for annotation, RGDID of the mouse/human gene for Rat ISO
         annot.setAspect(aspect);
         annot.setNotes(notesField); //dBReference for annotation and for Rat ISO if $with from file is null, with for Rat ISO if $with from file is not null
         annot.setQualifier(qualifier);
@@ -289,7 +303,7 @@ public class MAHQC {
         annot.setLastModifiedBy(createdBy);
         annot.setXrefSource(dBReference);
         annot.setAnnotationExtension(rec.fileLine[15]);
-        annot.setGeneProductFormId(rec.fileLine[16]);
+        annot.setGeneProductFormId(geneProductFormId);
 
         annotData.incomingAnnot = annot;
         rec.annotData.add(annotData);
