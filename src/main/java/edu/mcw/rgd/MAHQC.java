@@ -240,7 +240,7 @@ public class MAHQC {
             if( Utils.isStringEmpty(withInfo) ) {
                 withInfo = geneProductFormId;
             } else {
-                withInfo = withInfo+"|"+geneProductFormId;
+                withInfo = withInfo+","+geneProductFormId;
             }
             geneProductFormId = "";
             counters.increment("movedGeneProductFormIdIntoWithInfo");
