@@ -1,7 +1,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.MouseAndHumanGoAnnotationPipeline">
-        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Feb 04, 2021" />
+        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build May 12, 2021" />
         <property name="localDir" value="data"/>
 
         <property name="mgiFiles">
@@ -66,7 +66,7 @@
         <property name="goaPigRefRgdId" value="14298760" />
         <property name="issRefRgdId" value="1624291" />
         <property name="createdBy" value="190" />
-        <property name="staleAnnotDeleteThreshold" value="5%" />
+        <property name="staleAnnotDeleteThreshold" value="500%" />
 
         <property name="parser" ref="parser" />
         <property name="qc" ref="qc" />

@@ -10,6 +10,8 @@ import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.Utils;
 import org.apache.log4j.Logger;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -30,6 +32,7 @@ public class MAHQC {
     protected final Logger logCatalyticActivityIPIGoTerm = Logger.getLogger("catalyticActivityIPIGoTerm");
 
     static public Map<String,Integer> wrongEvidenceCounts = new HashMap<>();
+    private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
     private DAO dao;
     private Map<Integer,String> mapRgdIdStatus;
@@ -304,6 +307,10 @@ public class MAHQC {
         annot.setXrefSource(dBReference);
         annot.setAnnotationExtension(rec.fileLine[15]);
         annot.setGeneProductFormId(geneProductFormId);
+
+        synchronized (this) {
+            annot.setOriginalCreatedDate(dateFormat.parse(rec.fileLine[13]));
+        }
 
         annotData.incomingAnnot = annot;
         rec.annotData.add(annotData);

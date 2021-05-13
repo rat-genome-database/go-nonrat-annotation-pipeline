@@ -11,6 +11,7 @@ import org.springframework.core.io.FileSystemResource;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.*;
@@ -71,13 +72,23 @@ public class MouseAndHumanGoAnnotationPipeline {
         }
     }
 
+    static Date addMinutesToDate(Date date, int minutesToAdd) {
+        Date syncDate = date == null ? new Date() : date;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(syncDate);
+        calendar.add(Calendar.MINUTE, minutesToAdd);
+        return calendar.getTime();
+    }
+
     public void run() throws Exception{
 
         long startTime = System.currentTimeMillis();
-        staleAnnotCutoffDate = Utils.addHoursToDate(new Date(), -1);
+        //staleAnnotCutoffDate = Utils.addHoursToDate(new Date(), -1);
+        staleAnnotCutoffDate = addMinutesToDate(new Date(), -5);
 
         logStatus.info("   "+dao.getConnectionInfo());
         SimpleDateFormat sdt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        logStatus.info("   stale annots cutoff timestamp "+sdt.format(staleAnnotCutoffDate));
         logStatus.info("   started at "+sdt.format(new Date(startTime)));
 
         mapRgdIdStatus = dao.getStatusForGeneRgdIds();
@@ -166,6 +177,10 @@ public class MouseAndHumanGoAnnotationPipeline {
         counter = counters.get("updatedAnnotCount");
         if( counter!=0 )
             logStatus.info(counter+" " + speciesType + " annotations updated");
+
+        counter = counters.get("updatedOrigCreatedDate");
+        if( counter!=0 )
+            logStatus.info("    "+counter+" " + speciesType + " annotations with ORIGINAL_CREATED_DATE updated");
 
         counter = counters.get("notFoundInRgdGoTermCount");
         if( counter!=0 )

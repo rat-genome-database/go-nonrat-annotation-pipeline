@@ -5,6 +5,8 @@ import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.Utils;
 import org.apache.log4j.Logger;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -153,7 +155,8 @@ public class MAHDL {
             Annotation annotInRgd = dao.getAnnotation(annotKey);
             boolean changed = !Utils.stringsAreEqual(annotInRgd.getNotes(), a.getNotes())
                     || !Utils.stringsAreEqual(annotInRgd.getAnnotationExtension(), a.getAnnotationExtension())
-                    || !Utils.stringsAreEqual(annotInRgd.getGeneProductFormId(), a.getGeneProductFormId());
+                    || !Utils.stringsAreEqual(annotInRgd.getGeneProductFormId(), a.getGeneProductFormId())
+                    || !Utils.datesAreEqual(annotInRgd.getOriginalCreatedDate(), a.getOriginalCreatedDate());
 
             if( changed ) {
                 String msg = adata.db + ": FAK:" + annotKey + " " + a.getTermAcc() + " RGD:" + a.getAnnotatedObjectRgdId() + " RefRGD:" + a.getRefRgdId() + " " + a.getEvidence() + " W:" + a.getWithInfo();
@@ -163,12 +166,16 @@ public class MAHDL {
                 if( !Utils.stringsAreEqual(annotInRgd.getGeneProductFormId(), a.getGeneProductFormId()) ) {
                     msg += "\n   GENE_FORM  OLD["+Utils.NVL(annotInRgd.getGeneProductFormId(),"")+"]  NEW["+a.getGeneProductFormId()+"]";
                 }
+                if( !Utils.datesAreEqual(annotInRgd.getOriginalCreatedDate(), a.getOriginalCreatedDate()) ) {
+                    msg += "\n   ORIG CREATED DATE  OLD["+dumpDate(annotInRgd.getOriginalCreatedDate())+"]  NEW["+dumpDate(a.getOriginalCreatedDate())+"]";
+                    counters.increment("updatedOrigCreatedDate");
+                }
                 if( !Utils.stringsAreEqual(annotInRgd.getNotes(), a.getNotes()) ) {
                     msg += "\n   NOTES  OLD["+Utils.NVL(annotInRgd.getNotes(),"")+"]  NEW["+a.getNotes()+"]";
                 }
                 logUpdated.info(msg);
 
-                dao.updateAnnotEx(annotKey, a.getNotes(), a.getAnnotationExtension(), a.getGeneProductFormId());
+                dao.updateAnnotEx(annotKey, a.getNotes(), a.getAnnotationExtension(), a.getGeneProductFormId(), a.getOriginalCreatedDate());
                 counters.increment("updatedAnnotCount");
             } else {
                 dao.updateLastModifiedDateForAnnotation(annotKey);
@@ -176,5 +183,11 @@ public class MAHDL {
                 counters.increment("matchingAnnotCount");
             }
         }
+    }
+
+    private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+
+    synchronized String dumpDate(Date dt) {
+        return dt==null ? "" : dateFormat.format(dt);
     }
 }
