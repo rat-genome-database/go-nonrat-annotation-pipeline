@@ -26,7 +26,7 @@ public class MAHDL {
         this.dao = dao;
     }
 
-    public void process(MAHRecord rec) {
+    public void process(MAHRecord rec, CounterPool counters) {
 
         for( MAHAnnotData ad: rec.annotData ) {
             ad.key = computeAnnotKey(ad.incomingAnnot);

@@ -230,7 +230,7 @@ public class MAHQC {
         }
 
         // skip self-referencing annotations: where WITH_INFO = annotated_object_rgd_id
-        if( withInfoField.equals("RGD:"+rGDID) ) {
+        if( withInfoField!=null && withInfoField.equals("RGD:"+rGDID) ) {
             counters.increment("skippedSelfRefAnnots");
             return;
         }

@@ -86,7 +86,7 @@ public class DAO  {
         return annotationDAO.getCountOfAnnotationsByReference(refRgdId);
     }
 
-    synchronized public List<Gene> getRatOrthologs(int srcRgdId) throws Exception {
+     synchronized public List<Gene> getRatOrthologs(int srcRgdId) throws Exception {
 
         List<Gene> orthologs = _orthologCache.get(srcRgdId);
         if( orthologs==null ) {
@@ -174,14 +174,14 @@ public class DAO  {
      * @return number of rows affected
      * @throws Exception on spring framework dao failure
      */
-    public int deleteAnnotations(int createdBy, Date dt, Logger logStatus, String deleteThresholdStr, int refRgdId, int initialAnnotCount) throws Exception{
+    public int deleteAnnotations(int createdBy, Date dt, Logger logStatus, String deleteThresholdStr, int refRgdId, int initialAnnotCount, int speciesTypeKey) throws Exception{
 
         // extract delete threshold in percent
         int percentPos = deleteThresholdStr.indexOf('%');
         int deleteThreshold = Integer.parseInt(deleteThresholdStr.substring(0, percentPos));
 
-        int currentAnnotCount = annotationDAO.getCountOfAnnotationsByReference(refRgdId);
-        List<Annotation> annotsForDelete = annotationDAO.getAnnotationsModifiedBeforeTimestamp(createdBy, dt, refRgdId);
+        int currentAnnotCount = getCountOfAnnotationsByReferenceAndSpecies(refRgdId, speciesTypeKey);
+        List<Annotation> annotsForDelete = annotationDAO.getAnnotationsModifiedBeforeTimestamp(createdBy, dt, refRgdId, speciesTypeKey);
         List<Integer> fullAnnotKeys = new ArrayList<>(annotsForDelete.size());
         for( Annotation a: annotsForDelete ) {
             logDelete.info(a.dump("|"));
@@ -199,6 +199,14 @@ public class DAO  {
             return 0;
         }
         return annotationDAO.deleteAnnotations(fullAnnotKeys);
+    }
+
+    public int getCountOfAnnotationsByReferenceAndSpecies(int refRgdId, int speciesTypeKey) throws Exception {
+
+        String query = "SELECT COUNT(*) "+
+                "FROM full_annot a,rgd_ids r "+
+                "WHERE ref_rgd_id=? AND r.species_type_key=? AND annotated_object_rgd_id=rgd_id AND r.object_status='ACTIVE'";
+        return annotationDAO.getCount(query, refRgdId, speciesTypeKey);
     }
 
     /**
@@ -233,5 +241,10 @@ public class DAO  {
         String sql = "SELECT * FROM full_annot WHERE created_by NOT IN(67,192) AND term_acc LIKE 'GO:%' AND "+
             "EXISTS( SELECT 1 FROM rgd_ids r WHERE annotated_object_rgd_id=rgd_id AND object_status='ACTIVE' AND species_type_key=4)";
         return annotationDAO.executeAnnotationQuery(sql);
+    }
+
+    public String getSpeciesShortName(int speciesTypeKey) throws Exception {
+        String sql = "SELECT MAX(short_name) FROM species_types WHERE species_type_key=?";
+        return annotationDAO.getStringResult(sql, speciesTypeKey);
     }
 }

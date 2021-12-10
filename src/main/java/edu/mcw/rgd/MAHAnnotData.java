@@ -2,6 +2,8 @@ package edu.mcw.rgd;
 
 import edu.mcw.rgd.datamodel.ontology.Annotation;
 
+import java.util.List;
+
 /**
  * @author mtutaj
  * Date: 1/7/15
@@ -14,4 +16,5 @@ public class MAHAnnotData {
     String db;
     String key;
     String dbObjectId;
+    List<MAHAnnotData> parentList;
 }

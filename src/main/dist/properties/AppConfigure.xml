@@ -1,7 +1,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-    <bean id="loader" class="edu.mcw.rgd.MouseAndHumanGoAnnotationPipeline">
-        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build May 12, 2021" />
+    <bean id="loader" class="edu.mcw.rgd.GoNonratAnnotationPipeline">
+        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Oct 26, 2021" />
         <property name="localDir" value="data"/>
 
         <property name="mgiFiles">
@@ -60,13 +60,17 @@
             </list>
         </property>
 
+        <property name="goaAllSpeciesFile" value="ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz"/>
+        <property name="goaAllSpeciesInRgdFile" value="uniprot_all_in_rgd.gaf.gz"/>
+
         <property name="mgiRefRgdId" value="2290270" />
         <property name="goaHumanRefRgdId" value="2290271" />
         <property name="goaDogRefRgdId" value="13508589" />
         <property name="goaPigRefRgdId" value="14298760" />
         <property name="issRefRgdId" value="1624291" />
+        <property name="goaAllSpeciesRefRgdId" value="150520179"/>
         <property name="createdBy" value="190" />
-        <property name="staleAnnotDeleteThreshold" value="500%" />
+        <property name="staleAnnotDeleteThreshold" value="50%" />
 
         <property name="parser" ref="parser" />
         <property name="qc" ref="qc" />
