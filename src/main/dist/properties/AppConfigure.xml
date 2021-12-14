@@ -1,7 +1,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.GoNonratAnnotationPipeline">
-        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Oct 26, 2021" />
+        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Nov 13, 2021" />
         <property name="localDir" value="data"/>
 
         <property name="mgiFiles">
@@ -16,61 +16,23 @@
             </list>
         </property>
 
-        <property name="goaHumanFiles">
-            <list>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_complex.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_isoform.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/HUMAN/goa_human_rna.gaf.gz</value>
-            </list>
-        </property>
-        <property name="goaHumanDbSources">
-            <list>
-                <value>UniProtKB</value>
-                <value>HGNC</value>
-                <value>Ensembl</value>
-            </list>
-        </property>
-
-        <property name="goaDogFiles">
-            <list>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/DOG/goa_dog.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/DOG/goa_dog_complex.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/DOG/goa_dog_isoform.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/DOG/goa_dog_rna.gaf.gz</value>
-            </list>
-        </property>
-        <property name="goaDogDbSources">
-            <list>
-                <value>UniProtKB</value>
-            </list>
-        </property>
-
-        <property name="goaPigFiles">
-            <list>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/PIG/goa_pig.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/PIG/goa_pig_complex.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/PIG/goa_pig_isoform.gaf.gz</value>
-                <value>ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/PIG/goa_pig_rna.gaf.gz</value>
-            </list>
-        </property>
-        <property name="goaPigDbSources">
-            <list>
-                <value>UniProtKB</value>
-            </list>
-        </property>
-
         <property name="goaAllSpeciesFile" value="ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz"/>
         <property name="goaAllSpeciesInRgdFile" value="uniprot_all_in_rgd.gaf.gz"/>
+        <property name="goaAllSpeciesFileSources">
+            <list>
+                <value>UniProtKB</value>
+                <!-- as of Dec 2021, sources present in the data, but not processed by the pipeline
+                <value>ComplexPortal</value>
+                <value>RNAcentral</value>
+                -->
+            </list>
+        </property>
 
         <property name="mgiRefRgdId" value="2290270" />
-        <property name="goaHumanRefRgdId" value="2290271" />
-        <property name="goaDogRefRgdId" value="13508589" />
-        <property name="goaPigRefRgdId" value="14298760" />
         <property name="issRefRgdId" value="1624291" />
         <property name="goaAllSpeciesRefRgdId" value="150520179"/>
         <property name="createdBy" value="190" />
-        <property name="staleAnnotDeleteThreshold" value="50%" />
+        <property name="staleAnnotDeleteThreshold" value="10%" />
 
         <property name="parser" ref="parser" />
         <property name="qc" ref="qc" />

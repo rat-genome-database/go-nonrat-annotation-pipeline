@@ -33,23 +33,15 @@ public class GoNonratAnnotationPipeline {
 
     private String localDir;
     private List<String> mgiFiles;
-    private List<String> goaHumanFiles;
-    private List<String> goaHumanDbSources;
     private List<String> goaMouseDbSources;
-    private List<String> goaDogFiles;
-    private List<String> goaDogDbSources;
-    private List<String> goaPigFiles;
-    private List<String> goaPigDbSources;
-    private int goaHumanRefRgdId;
     private int mgiRefRgdId;
-    private int goaDogRefRgdId;
-    private int goaPigRefRgdId;
     private int goaAllSpeciesRefRgdId;
     private int issRefRgdId;
     private int createdBy;
     private String version;
     private String goaAllSpeciesFile;
     private String goaAllSpeciesInRgdFile;
+    private List<String> goaAllSpeciesFileSources;
 
     DAO dao = new DAO();
     Map<Integer,String> mapRgdIdStatus;
@@ -101,10 +93,7 @@ public class GoNonratAnnotationPipeline {
         downloadAllSpeciesFile();
 
         // process the data
-        downloadAndProcessFiles(getGoaHumanDbSources(), getGoaHumanRefRgdId(), getGoaHumanFiles(), SpeciesType.HUMAN);
         downloadAndProcessFiles(getGoaMouseDbSources(), getMgiRefRgdId(), getMgiFiles(), SpeciesType.MOUSE);
-        downloadAndProcessFiles(getGoaDogDbSources(), getGoaDogRefRgdId(), getGoaDogFiles(), SpeciesType.DOG);
-        downloadAndProcessFiles(getGoaPigDbSources(), getGoaPigRefRgdId(), getGoaPigFiles(), SpeciesType.PIG);
 
         // Note: chinchilla processing must run as the last species!
         downloadAndProcessFiles(null, getIssRefRgdId(), null, SpeciesType.CHINCHILLA);
@@ -236,9 +225,6 @@ public class GoNonratAnnotationPipeline {
 
         // show current counts
         counts.put(getMgiRefRgdId()+"|"+SpeciesType.MOUSE, dao.getCountOfAnnotationForRefRgdId(getMgiRefRgdId()));
-        counts.put(getGoaHumanRefRgdId()+"|"+SpeciesType.HUMAN, dao.getCountOfAnnotationForRefRgdId(getGoaHumanRefRgdId()));
-        counts.put(getGoaDogRefRgdId()+"|"+SpeciesType.DOG, dao.getCountOfAnnotationForRefRgdId(getGoaDogRefRgdId()));
-        counts.put(getGoaPigRefRgdId()+"|"+SpeciesType.PIG, dao.getCountOfAnnotationForRefRgdId(getGoaPigRefRgdId()));
         counts.put(getIssRefRgdId()+"|"+0, dao.getCountOfAnnotationForRefRgdId(getIssRefRgdId()));
 
         for( int sp: SpeciesType.getSpeciesTypeKeys() ) {
@@ -440,14 +426,6 @@ public class GoNonratAnnotationPipeline {
         return line.substring(pos, pos2);
     }
 
-    public void setGoaHumanRefRgdId(int goaHumanRefRgdId) {
-        this.goaHumanRefRgdId = goaHumanRefRgdId;
-    }
-
-    public int getGoaHumanRefRgdId() {
-        return goaHumanRefRgdId;
-    }
-
     public void setMgiRefRgdId(int mgiRefRgdId) {
         this.mgiRefRgdId = mgiRefRgdId;
     }
@@ -488,14 +466,6 @@ public class GoNonratAnnotationPipeline {
         return localDir;
     }
 
-    public void setGoaHumanFiles(List<String> goaHumanFiles) {
-        this.goaHumanFiles = goaHumanFiles;
-    }
-
-    public List<String> getGoaHumanFiles() {
-        return goaHumanFiles;
-    }
-
     public void setMgiFiles(List<String> mgiFiles) {
         this.mgiFiles = mgiFiles;
     }
@@ -520,14 +490,6 @@ public class GoNonratAnnotationPipeline {
         return staleAnnotDeleteThreshold;
     }
 
-    public void setGoaHumanDbSources(List<String> goaHumanDbSources) {
-        this.goaHumanDbSources = goaHumanDbSources;
-    }
-
-    public List<String> getGoaHumanDbSources() {
-        return goaHumanDbSources;
-    }
-
     public void setGoaMouseDbSources(List<String> goaMouseDbSources) {
         this.goaMouseDbSources = goaMouseDbSources;
     }
@@ -536,60 +498,12 @@ public class GoNonratAnnotationPipeline {
         return goaMouseDbSources;
     }
 
-    public void setGoaDogFiles(List goaDogFiles) {
-        this.goaDogFiles = goaDogFiles;
-    }
-
-    public List getGoaDogFiles() {
-        return goaDogFiles;
-    }
-
-    public void setGoaDogDbSources(List goaDogDbSources) {
-        this.goaDogDbSources = goaDogDbSources;
-    }
-
-    public List getGoaDogDbSources() {
-        return goaDogDbSources;
-    }
-
-    public void setGoaDogRefRgdId(int goaDogRefRgdId) {
-        this.goaDogRefRgdId = goaDogRefRgdId;
-    }
-
-    public int getGoaDogRefRgdId() {
-        return goaDogRefRgdId;
-    }
-
     public void setParser(MAHParser parser) {
         this.parser = parser;
     }
 
     public MAHParser getParser() {
         return parser;
-    }
-
-    public List<String> getGoaPigFiles() {
-        return goaPigFiles;
-    }
-
-    public void setGoaPigFiles(List<String> goaPigFiles) {
-        this.goaPigFiles = goaPigFiles;
-    }
-
-    public List<String> getGoaPigDbSources() {
-        return goaPigDbSources;
-    }
-
-    public void setGoaPigDbSources(List<String> goaPigDbSources) {
-        this.goaPigDbSources = goaPigDbSources;
-    }
-
-    public int getGoaPigRefRgdId() {
-        return goaPigRefRgdId;
-    }
-
-    public void setGoaPigRefRgdId(int goaPigRefRgdId) {
-        this.goaPigRefRgdId = goaPigRefRgdId;
     }
 
     public int getGoaAllSpeciesRefRgdId() {
@@ -614,5 +528,13 @@ public class GoNonratAnnotationPipeline {
 
     public void setGoaAllSpeciesInRgdFile(String goaAllSpeciesInRgdFile) {
         this.goaAllSpeciesInRgdFile = goaAllSpeciesInRgdFile;
+    }
+
+    public List<String> getGoaAllSpeciesFileSources() {
+        return goaAllSpeciesFileSources;
+    }
+
+    public void setGoaAllSpeciesFileSources(List<String> goaAllSpeciesFileSources) {
+        this.goaAllSpeciesFileSources = goaAllSpeciesFileSources;
     }
 }
