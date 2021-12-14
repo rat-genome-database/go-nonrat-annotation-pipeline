@@ -12,7 +12,7 @@ apply plugin: 'application'
 // JDK 8
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-mainClassName = 'edu.mcw.rgd.GoNonratAnnotPipeline'
+mainClassName = 'edu.mcw.rgd.GoNonratAnnotationPipeline'
 String myAppName = 'GoNonRatAnnotationPipeline'
 
 repositories {
