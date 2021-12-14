@@ -3,11 +3,14 @@ package edu.mcw.rgd;
 import edu.mcw.rgd.datamodel.SpeciesType;
 import edu.mcw.rgd.datamodel.ontology.Annotation;
 import edu.mcw.rgd.process.Utils;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mtutaj on 3/2/2018.
@@ -27,10 +30,12 @@ public class MAHParser {
         this.dao = dao;
     }
 
-    public List<MAHRecord> process() throws Exception {
+    public List<MAHRecord> process(Logger logStatus) throws Exception {
         if( speciesTypeKey == SpeciesType.CHINCHILLA ) {
             return processForChinchilla();
         }
+
+        Map<String,Integer> sourceHitMap = new HashMap<>();
 
         List<MAHRecord> records = new ArrayList<>();
         for( String fileName: fileNames ) {
@@ -46,6 +51,16 @@ public class MAHParser {
 
                 String[] lineCols = line2.split("(\\t)", -1);
                 String dbName = lineCols[0];
+
+                // increment hit count for given db source
+                Integer hitCount = sourceHitMap.get(dbName);
+                if( hitCount==null ) {
+                    hitCount = 1;
+                } else {
+                    hitCount++;
+                }
+                sourceHitMap.put(dbName, hitCount);
+
                 // skip lines that do not begin with db name (f.e. comment lines start with '!')
                 if (!fromDatabases.contains(dbName)) {
                     continue;
@@ -58,6 +73,12 @@ public class MAHParser {
             }
             in.close();
         }
+
+        logStatus.info("DB Source line count: ");
+        for( Map.Entry<String,Integer> entry: sourceHitMap.entrySet() ) {
+            logStatus.info("    "+entry.getKey()+": "+Utils.formatThousands(entry.getValue()));
+        }
+
         return records;
     }
 

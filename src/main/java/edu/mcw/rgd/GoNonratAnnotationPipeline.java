@@ -130,7 +130,7 @@ public class GoNonratAnnotationPipeline {
         CounterPool counters = new CounterPool();
 
         logStatus.info("   parser starts...");
-        List<MAHRecord> records = parser.process();
+        List<MAHRecord> records = parser.process(logStatus);
 
         // randomize incoming records to minimize risk of conflicts
         Collections.shuffle(records);
@@ -319,9 +319,6 @@ public class GoNonratAnnotationPipeline {
      */
     void downloadAllSpeciesFile() throws Exception {
 
-        List<String> sourcesProcessed = new ArrayList<>();
-        sourcesProcessed.add("UniProtKB");
-
         AllSpeciesFileSplitter fileSplitter = new AllSpeciesFileSplitter();
         String lastAllSpeciesFile = fileSplitter.downloadIfNew(getGoaAllSpeciesFile());
         Map<Integer, String> fileMap = fileSplitter.extractFilesForRgdSpecies(lastAllSpeciesFile);
@@ -334,7 +331,7 @@ public class GoNonratAnnotationPipeline {
                 List<String> filesProcessed = new ArrayList<>();
                 filesProcessed.add(fileName);
 
-                downloadAndProcessFiles(sourcesProcessed, getGoaAllSpeciesRefRgdId(), filesProcessed, speciesTypeKey);
+                downloadAndProcessFiles(getGoaAllSpeciesFileSources(), getGoaAllSpeciesRefRgdId(), filesProcessed, speciesTypeKey);
             }
 
             return;
