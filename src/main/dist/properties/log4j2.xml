@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- <PatternLayout pattern="%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/> -->
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] %msg%n"/>
+        </Console>
+
+        <RollingFile name="status" append="true" fileName="logs/status.log" filePattern="logs/status.log.%d{yyyy-MM}">
+            <PatternLayout pattern="%d{yyyy-MM-hh HH:mm:ss} %p [%c] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <File name="summary" append="false" fileName="logs/summary.log">
+            <PatternLayout pattern="%m%n"/>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+        </File>
+        <RollingFile name="detail" append="true" fileName="logs/detail.log" filePattern="logs/detail.log.%d{yyyy-MM}">
+            <PatternLayout pattern="%d{yyyy-MM-hh HH:mm:ss} %p [%c] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="unmatched" append="true" fileName="logs/unmatched.log" filePattern="logs/unmatched.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="inactive" append="true" fileName="logs/inactive.log" filePattern="logs/inactive.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="insert" append="true" fileName="logs/insert.log" filePattern="logs/insert.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="updated" append="true" fileName="logs/updated.log" filePattern="logs/updated.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="upToDate" append="true" fileName="logs/upToDate.log" filePattern="logs/upToDate.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="delete" append="true" fileName="logs/delete.log" filePattern="logs/delete.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="noRatGene" append="true" fileName="logs/noRatGene.log" filePattern="logs/noRatGene.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="exception" append="true" fileName="logs/exception.log" filePattern="logs/exception.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="noGoTerm" append="true" fileName="logs/noGoTerm.log" filePattern="logs/noGoTerm.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="highLevelGoTerm" append="true" fileName="logs/highLevelGoTerm.log" filePattern="logs/highLevelGoTerm.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="catalyticActivityIPIGoTerm" append="true" fileName="logs/catalyticActivityIPIGoTerm.log" filePattern="logs/catalyticActivityIPIGoTerm.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="fileDownload" append="true" fileName="logs/fileDownload.log" filePattern="logs/fileDownload.log.%d{yyyy-MM}">
+            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <!-- daily -->
+        <Logger name="status" level="debug" additivity="false">
+            <AppenderRef ref="status" level="info"/>
+            <AppenderRef ref="summary" level="info"/><!-- human readable -->
+            <AppenderRef ref="detail"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+
+        <!-- monthly -->
+        <Logger name="unmatched" level="debug" additivity="false">
+            <AppenderRef ref="unmatched"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="inactive" level="debug" additivity="false">
+            <AppenderRef ref="inactive"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="insert" level="debug" additivity="false">
+            <AppenderRef ref="insert"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="updated" level="debug" additivity="false">
+            <AppenderRef ref="updated"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="upToDate" level="debug" additivity="false">
+            <AppenderRef ref="upToDate"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="delete" level="debug" additivity="false">
+            <AppenderRef ref="delete"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="noRatGene" level="debug" additivity="false">
+            <AppenderRef ref="noRatGene"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="exception" level="debug" additivity="false">
+            <AppenderRef ref="exception"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="noGoTerm" level="debug" additivity="false">
+            <AppenderRef ref="noGoTerm"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="highLevelGoTerm" level="debug" additivity="false">
+            <AppenderRef ref="highLevelGoTerm"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="catalyticActivityIPIGoTerm" level="debug" additivity="false">
+            <AppenderRef ref="catalyticActivityIPIGoTerm"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+        <Logger name="edu.mcw.rgd.process.FileDownloader" level="debug" additivity="false">
+            <AppenderRef ref="fileDownload"/>
+            <AppenderRef ref="Console" level="info"/>
+        </Logger>
+    </Loggers>
+</Configuration>

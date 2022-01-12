@@ -4,7 +4,8 @@ import edu.mcw.rgd.datamodel.SpeciesType;
 import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.FileDownloader;
 import edu.mcw.rgd.process.Utils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.FileSystemResource;
@@ -47,8 +48,8 @@ public class GoNonratAnnotationPipeline {
     Map<Integer,String> mapRgdIdStatus;
     Date staleAnnotCutoffDate;
 
-    protected final Logger logStatus = Logger.getLogger("status");
-    protected final Logger logException = Logger.getLogger("exception");
+    protected final Logger logStatus = LogManager.getLogger("status");
+    protected final Logger logException = LogManager.getLogger("exception");
     private MAHQC qc;
     private String staleAnnotDeleteThreshold;
     private MAHParser parser;

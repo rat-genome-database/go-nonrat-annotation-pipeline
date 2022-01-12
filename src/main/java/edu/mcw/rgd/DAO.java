@@ -6,7 +6,8 @@ import edu.mcw.rgd.datamodel.RgdId;
 import edu.mcw.rgd.datamodel.SpeciesType;
 import edu.mcw.rgd.datamodel.ontology.Annotation;
 import edu.mcw.rgd.datamodel.ontologyx.Term;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DAO  {
 
-    protected final Logger logDelete = Logger.getLogger("delete");
+    protected final Logger logDelete = LogManager.getLogger("delete");
 
     AnnotationDAO annotationDAO = new AnnotationDAO();
     GeneDAO geneDAO = new GeneDAO();
@@ -152,7 +153,7 @@ public class DAO  {
         try {
             annotationDAO.insertAnnotation(annot);
         } catch(Exception e) {
-            Logger logStatus = Logger.getLogger("status");
+            Logger logStatus = LogManager.getLogger("status");
             logStatus.warn("INSERT PROBLEM for "+annot.dump("|"));
             throw e;
         }

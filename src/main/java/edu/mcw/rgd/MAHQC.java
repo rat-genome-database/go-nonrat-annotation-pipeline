@@ -8,7 +8,8 @@ import edu.mcw.rgd.datamodel.ontology.Annotation;
 import edu.mcw.rgd.datamodel.ontologyx.Term;
 import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.Utils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,13 +24,13 @@ import java.util.*;
  */
 public class MAHQC {
 
-    protected final Logger logStatus = Logger.getLogger("status");
-    protected final Logger logUnmatched = Logger.getLogger("unmatched");
-    protected final Logger logInactive = Logger.getLogger("inactive");
-    protected final Logger logNoRatGene = Logger.getLogger("noRatGene");
-    protected final Logger logNoGoTerm = Logger.getLogger("noGoTerm");
-    protected final Logger logHighLevelGoTerm = Logger.getLogger("highLevelGoTerm");
-    protected final Logger logCatalyticActivityIPIGoTerm = Logger.getLogger("catalyticActivityIPIGoTerm");
+    protected final Logger logStatus = LogManager.getLogger("status");
+    protected final Logger logUnmatched = LogManager.getLogger("unmatched");
+    protected final Logger logInactive = LogManager.getLogger("inactive");
+    protected final Logger logNoRatGene = LogManager.getLogger("noRatGene");
+    protected final Logger logNoGoTerm = LogManager.getLogger("noGoTerm");
+    protected final Logger logHighLevelGoTerm = LogManager.getLogger("highLevelGoTerm");
+    protected final Logger logCatalyticActivityIPIGoTerm = LogManager.getLogger("catalyticActivityIPIGoTerm");
 
     static public Map<String,Integer> wrongEvidenceCounts = new HashMap<>();
     private DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");

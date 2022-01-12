@@ -1,3 +1,6 @@
+Jan 12, 2022
+  updated log4j to avoid zero day exploit
+
 Dec 13, 2021
   switched the source to UniProtKB all-species-file
 

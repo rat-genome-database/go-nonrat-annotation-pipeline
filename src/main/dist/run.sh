@@ -13,7 +13,7 @@ fi
 cd $HOMEDIR
 
 java -Dspring.config=$HOMEDIR/../properties/default_db2.xml \
-  -Dlog4j.configuration=file://$HOMEDIR/properties/log4j.properties \
+  -Dlog4j.configurationFile=file://$HOMEDIR/properties/log4j2.xml \
   -jar lib/$APPNAME.jar "$@" > run.log 2>&1
 
-mailx -s "[$SERVER] GO NonRat Annotation Pipeline" $EMAIL_LIST < $HOMEDIR/logs/status_summary.log
+mailx -s "[$SERVER] GO NonRat Annotation Pipeline" $EMAIL_LIST < $HOMEDIR/logs/summary.log

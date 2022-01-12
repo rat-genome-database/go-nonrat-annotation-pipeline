@@ -3,7 +3,8 @@ package edu.mcw.rgd;
 import edu.mcw.rgd.datamodel.ontology.Annotation;
 import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.Utils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -14,9 +15,9 @@ import java.util.*;
  */
 public class MAHDL {
 
-    protected final Logger logInsert = Logger.getLogger("insert");
-    protected final Logger logUpdated = Logger.getLogger("updated");
-    protected final Logger logUpToDate = Logger.getLogger("upToDate");
+    protected final Logger logInsert = LogManager.getLogger("insert");
+    protected final Logger logUpdated = LogManager.getLogger("updated");
+    protected final Logger logUpToDate = LogManager.getLogger("upToDate");
 
     private DAO dao;
 
