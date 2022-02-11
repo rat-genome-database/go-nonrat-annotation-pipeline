@@ -203,11 +203,7 @@ public class DAO  {
     }
 
     public int getCountOfAnnotationsByReferenceAndSpecies(int refRgdId, int speciesTypeKey) throws Exception {
-
-        String query = "SELECT COUNT(*) "+
-                "FROM full_annot a,rgd_ids r "+
-                "WHERE ref_rgd_id=? AND r.species_type_key=? AND annotated_object_rgd_id=rgd_id AND r.object_status='ACTIVE'";
-        return annotationDAO.getCount(query, refRgdId, speciesTypeKey);
+        return annotationDAO.getCountOfAnnotationsByReference(refRgdId, speciesTypeKey);
     }
 
     /**
