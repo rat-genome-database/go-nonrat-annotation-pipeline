@@ -65,12 +65,6 @@
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
         </RollingFile>
-        <RollingFile name="exception" append="true" fileName="logs/exception.log" filePattern="logs/exception.log.%d{yyyy-MM}">
-            <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
-            <Policies>
-                <TimeBasedTriggeringPolicy interval="1"/>
-            </Policies>
-        </RollingFile>
         <RollingFile name="noGoTerm" append="true" fileName="logs/noGoTerm.log" filePattern="logs/noGoTerm.log.%d{yyyy-MM}">
             <PatternLayout pattern="[%d{yyyy-MM-hh HH:mm:ss}] - %m%n"/>
             <Policies>
@@ -137,10 +131,6 @@
         </Logger>
         <Logger name="noRatGene" level="debug" additivity="false">
             <AppenderRef ref="noRatGene"/>
-            <AppenderRef ref="Console" level="info"/>
-        </Logger>
-        <Logger name="exception" level="debug" additivity="false">
-            <AppenderRef ref="exception"/>
             <AppenderRef ref="Console" level="info"/>
         </Logger>
         <Logger name="noGoTerm" level="debug" additivity="false">

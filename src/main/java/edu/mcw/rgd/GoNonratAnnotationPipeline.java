@@ -49,7 +49,6 @@ public class GoNonratAnnotationPipeline {
     Date staleAnnotCutoffDate;
 
     protected final Logger logStatus = LogManager.getLogger("status");
-    protected final Logger logException = LogManager.getLogger("exception");
     private MAHQC qc;
     private String staleAnnotDeleteThreshold;
     private MAHParser parser;
@@ -216,8 +215,8 @@ public class GoNonratAnnotationPipeline {
         if( counter!=0 )
             logStatus.info(counter+" " + speciesType + " incoming lines removed due to WITH_INFO consolidation WITH_INFO");
 
-        // dump all counters to exception log
-        logException.info(counters.dumpAlphabetically());
+        // dump all counters to detail log
+        logStatus.debug(counters.dumpAlphabetically());
     }
 
     Map<String,Integer> getCountsForRefRgdIds() throws Exception {
