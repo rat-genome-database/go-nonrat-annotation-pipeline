@@ -1,3 +1,6 @@
+Mar 03, 2022
+  updated README file
+
 Feb 11, 2022
   code simplification (in DAO reused code from rgdcore)
 

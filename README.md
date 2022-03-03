@@ -1,12 +1,16 @@
 # go-nonrat-annotation-pipeline
 Goals:
 
-- Load / update GO annotations for mouse, human and dog genes from GO consortium.
-- Generate inferred ISO annotations for RAT from loaded mouse, human, dog and pig GO annotations.
+- Load / update GO annotations for all species (except RAT) in RGD from GO consortium.
+- Generate inferred ISO annotations for RAT from loaded GO annotations.
 - Generate inferred ISO annotations for RAT from manual chinchilla GO annotations.
 - Evidence codes to make inferred rat annotations: 'EXP', 'IDA', 'IEP', 'IGI', 'IMP', 'IPI'.
 
-The source files are loaded from ftp://ftp.geneontology.org/pub/go/gene-associations/
+Source for mouse GO annotations:
+http://www.informatics.jax.org/downloads/reports/gene_association.mgi.gz
+
+Source for GO annotations for species other than mouse and rat:
+ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz
 
 Logic notes:
 1) for given species, multiple database sources could be processed (previously only 1 source was allowed)
