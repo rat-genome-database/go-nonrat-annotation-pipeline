@@ -79,7 +79,7 @@ public class MAHQC {
         Collection<Gene> validGenes = validateGeneStatus(genes, rec.dbObjectID, rec.dbName, counters);
 
         if (validGenes.isEmpty()) {
-            logUnmatched.info(rec.dbName+": "+rec.dbObjectID);
+            logUnmatched.debug(rec.dbName+": "+rec.dbObjectID);
             counters.increment("unmatchedCounter");
             return; // no match either -- continue to the next file line
         }
@@ -130,7 +130,12 @@ public class MAHQC {
                 logStatus.warn("unexpected RNAcentral taxon for "+dBObjectID);
                 return null;
             }
-            List<Gene> genes = dao.getGenesByXdbId(xdbKey, dBObjectID, speciesTypeKey);
+            List<Gene> genes = dao.getGenesByXdbId(xdbKey, accId, speciesTypeKey);
+            if( !genes.isEmpty() ) {
+                logStatus.debug("  RNACENTRAL "+dBObjectID+" mapped to a gene!");
+            }
+            rec.dbObjectID = accId;
+
             return genes;
 
         } else if( rec.dbName.equals("RGD") ) {
