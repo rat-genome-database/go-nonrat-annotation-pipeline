@@ -129,7 +129,7 @@ public class GoNonratAnnotationPipeline {
 
         CounterPool counters = new CounterPool();
 
-        logStatus.info("   parser starts...");
+        logStatus.info("START PARSER for  "+SpeciesType.getShortName(speciesTypeKey));
         List<MAHRecord> records = parser.process(logStatus);
 
         // randomize incoming records to minimize risk of conflicts
