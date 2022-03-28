@@ -126,6 +126,24 @@ public class DAO  {
     }
     private static final HashMap<String, List<Gene>> _genesCache2 = new HashMap<>(10007);
 
+
+    public List<Gene> getGenesByXdbId(int xdbKey, String accId, int speciesTypeKey) throws Exception {
+
+        String key = xdbKey+"|"+accId+"|"+speciesTypeKey;
+
+        synchronized(_genesCache3) {
+            // try to get data from cache first
+            List<Gene> genes = _genesCache3.get(key);
+            if (genes == null) {
+                // not in cache -- fetch data from db
+                genes = xdbIdDAO.getGenesByXdbId(xdbKey, accId, speciesTypeKey);
+                _genesCache3.put(key, genes);
+            }
+            return genes;
+        }
+    }
+    private static final HashMap<String, List<Gene>> _genesCache3 = new HashMap<>(10007);
+
     /**
      * get annotation key by a list of values that comprise unique key:
      * TERM_ACC+ANNOTATED_OBJECT_RGD_ID+REF_RGD_ID+EVIDENCE+WITH_INFO+QUALIFIER+XREF_SOURCE

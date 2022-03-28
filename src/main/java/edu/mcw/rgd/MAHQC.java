@@ -115,6 +115,24 @@ public class MAHQC {
             xdbKey = XdbId.XDB_KEY_ENSEMBL_GENES;
         } else if( rec.dbName.equals("MGI") ) {
             xdbKey = XdbId.XDB_KEY_MGD;
+
+            // special processing for RNAcentral
+        } else if( rec.dbName.equals("RNAcentral") ) {
+            xdbKey = 68; // RNAcentral xdb key
+            // RNAcentral accession ids in the file are like this: 'URS00022AD472_9606'
+            // however, in database, they are in the form 'URS00022AD472' for species '9606'
+            // (there could be the same acc id for a number of species)
+            int underscorePos = dBObjectID.indexOf("_");
+            String accId = dBObjectID.substring(0, underscorePos);
+            String taxon = "taxon:"+dBObjectID.substring(underscorePos+1);
+            int speciesTypeKey = SpeciesType.parse(taxon);
+            if( speciesTypeKey<=0 ) {
+                logStatus.warn("unexpected RNAcentral taxon for "+dBObjectID);
+                return null;
+            }
+            List<Gene> genes = dao.getGenesByXdbId(xdbKey, dBObjectID, speciesTypeKey);
+            return genes;
+
         } else if( rec.dbName.equals("RGD") ) {
             // special handling for chinchilla
             rec.dbObjectID = rec.fileLine[1];
