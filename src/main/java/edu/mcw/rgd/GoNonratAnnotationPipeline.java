@@ -322,105 +322,16 @@ public class GoNonratAnnotationPipeline {
         AllSpeciesFileSplitter fileSplitter = new AllSpeciesFileSplitter();
         String lastAllSpeciesFile = fileSplitter.downloadIfNew(getGoaAllSpeciesFile());
         Map<Integer, String> fileMap = fileSplitter.extractFilesForRgdSpecies(lastAllSpeciesFile);
-        if( true ) {
 
-            for( Map.Entry<Integer, String> entry: fileMap.entrySet() ) {
-                int speciesTypeKey = entry.getKey();
-                String fileName = entry.getValue();
+        for( Map.Entry<Integer, String> entry: fileMap.entrySet() ) {
+            int speciesTypeKey = entry.getKey();
+            String fileName = entry.getValue();
 
-                List<String> filesProcessed = new ArrayList<>();
-                filesProcessed.add(fileName);
+            List<String> filesProcessed = new ArrayList<>();
+            filesProcessed.add(fileName);
 
-                downloadAndProcessFiles(getGoaAllSpeciesFileSources(), getGoaAllSpeciesRefRgdId(), filesProcessed, speciesTypeKey);
-            }
-
-            return;
+            downloadAndProcessFiles(getGoaAllSpeciesFileSources(), getGoaAllSpeciesRefRgdId(), filesProcessed, speciesTypeKey);
         }
-
-
-
-        String localFile = downloadFile(getGoaAllSpeciesFile());
-        logStatus.info("Downloaded "+getGoaAllSpeciesFile());
-
-        String msg = "   taxons to be processed: ";
-        Set<String> processedTaxons = new HashSet<>();
-        for( int speciesType: SpeciesType.getSpeciesTypeKeys() ) {
-
-            if( speciesType==SpeciesType.RAT || speciesType==SpeciesType.MOUSE ) {
-                continue;
-            }
-            if( !SpeciesType.isSearchable(speciesType) ) {
-                continue;
-            }
-            int taxonId = SpeciesType.getTaxonomicId(speciesType);
-            String taxon = Integer.toString(taxonId);
-            msg += taxon +" ";
-            processedTaxons.add("taxon:"+taxon);
-        }
-
-        logStatus.info(msg);
-
-        BufferedReader in = Utils.openReader(localFile);
-        String prefix = localFile.substring(0, getLocalDir().length()+10);
-        BufferedWriter out = Utils.openWriter(prefix+getGoaAllSpeciesInRgdFile());
-        long totalLinesProcessed = 0;
-        int linesWithSpeciesInRgd = 0;
-        Map<String,Integer> annotsPerSpeciesMap = new HashMap<>();
-
-        String line;
-        while( (line=in.readLine())!=null ) {
-            // copy comment lines as is
-            totalLinesProcessed++;
-            if( line.startsWith("!") ) {
-                out.write(line);
-                out.write("\n");
-                continue;
-            }
-
-            // taxon filter
-            String taxon = extractTaxonColumn(line);
-            if( taxon!=null && processedTaxons.contains(taxon) ) {
-                out.write(line);
-                out.write("\n");
-                linesWithSpeciesInRgd++;
-
-                Integer annotCount = annotsPerSpeciesMap.get(taxon);
-                if( annotCount==null ) {
-                    annotCount = 1;
-                } else {
-                    annotCount++;
-                }
-                annotsPerSpeciesMap.put(taxon, annotCount);
-            }
-        }
-        in.close();
-        out.close();
-
-        logStatus.info("   total lines processed: "+Utils.formatThousands(totalLinesProcessed));
-        logStatus.info("   lines with species in RGD: "+Utils.formatThousands(linesWithSpeciesInRgd));
-        for( Map.Entry<String, Integer> entry: annotsPerSpeciesMap.entrySet() ) {
-            String speciesName = SpeciesType.getCommonName(SpeciesType.parse(entry.getKey()));
-            logStatus.info("      lines for "+speciesName+": " + Utils.formatThousands(entry.getValue()));
-        }
-
-        logStatus.info("=====");
-    }
-
-    String extractTaxonColumn(String line) {
-
-        // taxon is 13th column in the GAF file
-        int pos = 0;
-        for( int i=0; i<12; i++ ) {
-            int pos2 = line.indexOf('\t', pos);
-            if( pos2<0 ) {
-                return null;
-            }
-            pos = pos2+1;
-        }
-
-        int pos2 = line.indexOf('\t', pos);
-
-        return line.substring(pos, pos2);
     }
 
     public void setMgiRefRgdId(int mgiRefRgdId) {
