@@ -10,8 +10,6 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.FileSystemResource;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -101,17 +99,9 @@ public class GoNonratAnnotationPipeline {
         logStatus.info("evidence codes to make inferred rat annotations: "
                 +Utils.concatenate(qc.getEvidenceCodesToMakeRatAnnots(), ", ", "\'"));
 
-        if( false ) {
-            // evidence codes with counts
-            logStatus.info("evidence codes not used to make rat annotations:");
-            for (Map.Entry<String, Integer> entry : MAHQC.wrongEvidenceCounts.entrySet()) {
-                logStatus.info("  " + entry.getKey() + ": " + entry.getValue());
-            }
-        } else {
-            // evidence codes without counts
-            logStatus.info("evidence codes not used to make rat annotations: "
-                    +Utils.concatenate(MAHQC.wrongEvidenceCounts.keySet(), ", ", "\'"));
-        }
+        // evidence codes without counts
+        logStatus.info("evidence codes not used to make rat annotations: "
+                +Utils.concatenate(MAHQC.wrongEvidenceCounts.keySet(), ", ", "\'"));
 
         // show current counts
         dumpCountsForRefRgdIds(refCounts);

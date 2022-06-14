@@ -258,8 +258,7 @@ public class DAO  {
         return annotationDAO.executeAnnotationQuery(sql);
     }
 
-    public String getSpeciesShortName(int speciesTypeKey) throws Exception {
-        String sql = "SELECT MAX(short_name) FROM species_types WHERE species_type_key=?";
-        return annotationDAO.getStringResult(sql, speciesTypeKey);
+    public String getSpeciesShortName(int speciesTypeKey) {
+        return SpeciesType.getShortName(speciesTypeKey);
     }
 }
