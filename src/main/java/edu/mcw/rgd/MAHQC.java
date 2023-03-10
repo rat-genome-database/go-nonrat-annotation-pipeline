@@ -131,11 +131,7 @@ public class MAHQC {
                 return null;
             }
             List<Gene> genes = dao.getGenesByXdbId(xdbKey, accId, speciesTypeKey);
-            if( !genes.isEmpty() ) {
-                logStatus.debug("  RNACENTRAL "+dBObjectID+" mapped to a gene!");
-            }
             rec.dbObjectID = accId;
-
             return genes;
 
         } else if( rec.dbName.equals("RGD") ) {
