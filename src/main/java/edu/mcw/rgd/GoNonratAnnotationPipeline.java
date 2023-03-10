@@ -35,7 +35,7 @@ public class GoNonratAnnotationPipeline {
     private List<String> goaMouseDbSources;
     private int mgiRefRgdId;
     private int goaAllSpeciesRefRgdId;
-    private int issRefRgdId;
+    private int isoRefRgdId;
     private int createdBy;
     private String version;
     private String goaAllSpeciesFile;
@@ -94,7 +94,7 @@ public class GoNonratAnnotationPipeline {
         downloadAndProcessFiles(getGoaMouseDbSources(), getMgiRefRgdId(), getMgiFiles(), SpeciesType.MOUSE);
 
         // Note: chinchilla processing must run as the last species!
-        downloadAndProcessFiles(null, getIssRefRgdId(), null, SpeciesType.CHINCHILLA);
+        downloadAndProcessFiles(null, getIsoRefRgdId(), null, SpeciesType.CHINCHILLA);
 
         logStatus.info("evidence codes to make inferred rat annotations: "
                 +Utils.concatenate(qc.getEvidenceCodesToMakeRatAnnots(), ", ", "\'"));
@@ -102,6 +102,8 @@ public class GoNonratAnnotationPipeline {
         // evidence codes without counts
         logStatus.info("evidence codes not used to make rat annotations: "
                 +Utils.concatenate(MAHQC.wrongEvidenceCounts.keySet(), ", ", "\'"));
+
+        deleteObsoleteIsoAnnotationsForRat();
 
         // show current counts
         dumpCountsForRefRgdIds(refCounts);
@@ -114,7 +116,7 @@ public class GoNonratAnnotationPipeline {
     public void processFile(List<String> fileNames, List<String> fromDatabases, int internalRefRGDID, int speciesTypeKey) throws Exception{
 
         parser.init(fileNames, fromDatabases, speciesTypeKey, dao);
-        qc.init(dao, mapRgdIdStatus, internalRefRGDID, createdBy, issRefRgdId, speciesTypeKey);
+        qc.init(dao, mapRgdIdStatus, internalRefRGDID, createdBy, isoRefRgdId, speciesTypeKey);
         MAHDL dl = new MAHDL(dao);
 
         CounterPool counters = new CounterPool();
@@ -215,7 +217,7 @@ public class GoNonratAnnotationPipeline {
 
         // show current counts
         counts.put(getMgiRefRgdId()+"|"+SpeciesType.MOUSE, dao.getCountOfAnnotationForRefRgdId(getMgiRefRgdId()));
-        counts.put(getIssRefRgdId()+"|"+0, dao.getCountOfAnnotationForRefRgdId(getIssRefRgdId()));
+        counts.put(getIsoRefRgdId()+"|"+0, dao.getCountOfAnnotationForRefRgdId(getIsoRefRgdId()));
 
         for( int sp: SpeciesType.getSpeciesTypeKeys() ) {
             if( sp==SpeciesType.MOUSE || sp==SpeciesType.RAT || !SpeciesType.isSearchable(sp) ) {
@@ -286,6 +288,22 @@ public class GoNonratAnnotationPipeline {
         logStatus.info("");
     }
 
+
+    void deleteObsoleteIsoAnnotationsForRat() throws Exception {
+
+        int speciesTypeKey = SpeciesType.RAT;
+        String speciesName = SpeciesType.getCommonName(speciesTypeKey);
+        int refRgdId = getIsoRefRgdId();
+
+        int count0 = dao.getCountOfAnnotationsByReferenceAndSpecies(refRgdId, speciesTypeKey);
+
+        // delete annotations not updated/inserted by the pipeline
+        int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), staleAnnotCutoffDate, logStatus, getStaleAnnotDeleteThreshold(), refRgdId, count0, speciesTypeKey);
+        if( annotsDeleted!=0 ) {
+            logStatus.info(annotsDeleted + " " + speciesName + " STALE ANNOTATIONS DELETED");
+        }
+    }
+
     String downloadFile(String file) throws Exception {
 
         if( file.startsWith("ftp") || file.startsWith("http") ) {
@@ -332,12 +350,12 @@ public class GoNonratAnnotationPipeline {
         return mgiRefRgdId;
     }
 
-    public void setIssRefRgdId(int issRefRgdId) {
-        this.issRefRgdId = issRefRgdId;
+    public void setIsoRefRgdId(int issRefRgdId) {
+        this.isoRefRgdId = issRefRgdId;
     }
 
-    public int getIssRefRgdId() {
-        return issRefRgdId;
+    public int getIsoRefRgdId() {
+        return isoRefRgdId;
     }
 
     public void setCreatedBy(int createdBy) {

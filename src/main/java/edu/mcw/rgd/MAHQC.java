@@ -45,12 +45,12 @@ public class MAHQC {
     private Set<String> evidenceCodesToMakeRatAnnots;
 
     public void init(DAO dao, Map<Integer,String> mapRgdIdStatus,
-                 int internalRefRgdId, int createdBy, int issRefRgdId, int speciesTypeKey) {
+                 int internalRefRgdId, int createdBy, int isoRefRgdId, int speciesTypeKey) {
         this.dao = dao;
         this.mapRgdIdStatus = mapRgdIdStatus;
         this.internalRefRGDID = internalRefRgdId;
         this.createdBy = createdBy;
-        this.isoRefRgdId = issRefRgdId;
+        this.isoRefRgdId = isoRefRgdId;
         this.speciesTypeKey = speciesTypeKey;
     }
 
