@@ -1,7 +1,7 @@
 # load GO Annotations for all species in RGD (except rat) into FULL_ANNOT table
 #
 . /etc/profile
-APPNAME=GoNonRatAnnotationPipeline
+APPNAME='go-nonrat-annotation-pipeline'
 HOMEDIR=/home/rgddata/pipelines/$APPNAME
 
 SERVER=`hostname -s | tr '[a-z]' '[A-Z]'`
