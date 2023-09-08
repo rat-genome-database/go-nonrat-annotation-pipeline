@@ -257,7 +257,7 @@ public class MAHQC {
 
         // ISO annotations: move GENE_PRODUCT_FORM_ID into WITH field
         String withInfo = withInfoField;
-        String geneProductFormId = rec.fileLine[16];
+        String geneProductFormId = rec.fileLine[17-1];
         if( evidenceField.equals("ISO") && !Utils.isStringEmpty(geneProductFormId) ) {
             // move GENE_PRODUCT_FORM_ID into WITH field
             if( Utils.isStringEmpty(withInfo) ) {
@@ -273,6 +273,13 @@ public class MAHQC {
         if( evidenceField.equals("ISO") && Utils.isStringEmpty(withInfo) ) {
             counters.increment("skippedIsoAnnots");
             return;
+        }
+
+        // annotation extension must NOT be transferred to ISO annotations (it could be species-specific)
+        String annotationExtension = rec.fileLine[16-1];
+        if( evidenceField.equals("ISO") && !Utils.isStringEmpty(annotationExtension) ) {
+            annotationExtension = "";
+            counters.increment("clearedAnnotationExtensionForIso");
         }
 
         MAHAnnotData annotData = new MAHAnnotData();
@@ -325,7 +332,7 @@ public class MAHQC {
         annot.setCreatedBy(createdBy);
         annot.setLastModifiedBy(createdBy);
         annot.setXrefSource(dBReference);
-        annot.setAnnotationExtension(rec.fileLine[15]);
+        annot.setAnnotationExtension(annotationExtension);
         annot.setGeneProductFormId(geneProductFormId);
 
         synchronized (this) {

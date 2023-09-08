@@ -1,3 +1,7 @@
+Sep 08, 2023
+  annotation extension field is no longer transferred to ISO annotations
+  (per GO request: annotation extension is often species specific, so it is unsafe to do so)
+
 Sep 01, 2023
   renamed distro to 'go-nonrat-annotation-pipeline'
 
