@@ -1,3 +1,6 @@
+Jan 22, 2024
+  replaced qualifier 'colocalizes_with' with 'located_in'
+
 Nov 13, 2023
   updated dependencies to java 17
 

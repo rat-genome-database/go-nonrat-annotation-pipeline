@@ -288,6 +288,11 @@ public class MAHQC {
         Annotation annot = new Annotation();
 
         String qualifier = Utils.isStringEmpty(rec.fileLine[3]) ? null : rec.fileLine[3].trim();
+        if( qualifier!=null && qualifier.contains("colocalizes_with") ) {
+            qualifier = qualifier.replace("colocalizes_with", "located_in");
+            counters.increment("replacedQualifier_colocalizes_with");
+        }
+
         String gOID=rec.fileLine[4];
         String dBReference=rec.fileLine[5];
         String aspect=rec.fileLine[8];
