@@ -7,7 +7,8 @@ Goals:
 - Evidence codes to make inferred rat annotations: 'EXP', 'IDA', 'IEP', 'IGI', 'IMP', 'IPI'.
 
 Source for mouse GO annotations:
-http://www.informatics.jax.org/downloads/reports/gene_association.mgi.gz
+https://current.geneontology.org/annotations/mgi.gaf.gz
+(As of April 2024, MGI JAX discontinued file http://www.informatics.jax.org/downloads/reports/gene_association.mgi.gz)
 
 Source for GO annotations for species other than mouse and rat:
 ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz
