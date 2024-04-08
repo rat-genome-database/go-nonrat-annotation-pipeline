@@ -1,3 +1,8 @@
+Apr 08, 2024
+  updated source for mouse file
+    previous: http://www.informatics.jax.org/downloads/reports/gene_association.mgi.gz
+    current:  https://current.geneontology.org/annotations/mgi.gaf.gz
+    
 Jan 22, 2024
   replaced qualifier 'colocalizes_with' with 'located_in'
 
