@@ -58,6 +58,19 @@ public class GoNonratAnnotationPipeline {
         GoNonratAnnotationPipeline loader = (GoNonratAnnotationPipeline) (bf.getBean("loader"));
         loader.logStatus.info("--- "+loader.getVersion()+" ---");
 
+        int argc = 0;
+        for( String arg: args ) {
+            if( arg.equals("--goaFileSplitter") ) {
+
+                String goaInputFile = args[++argc];
+                String goaOutputFile = args[++argc];
+
+                GoaFileSplitter.run(goaInputFile, goaOutputFile);
+                return;
+            }
+            argc++;
+        }
+
         try {
             loader.run();
         } catch(Exception e) {
@@ -329,7 +342,9 @@ public class GoNonratAnnotationPipeline {
 
         AllSpeciesFileSplitter fileSplitter = new AllSpeciesFileSplitter();
         String lastAllSpeciesFile = fileSplitter.downloadIfNew(getGoaAllSpeciesFile());
-        Map<Integer, String> fileMap = fileSplitter.extractFilesForRgdSpecies(lastAllSpeciesFile);
+        String lastRgdSpeciesFile = fileSplitter.filterRgdSpecies(lastAllSpeciesFile);
+
+        Map<Integer, String> fileMap = fileSplitter.extractFilesForRgdSpecies(lastRgdSpeciesFile);
 
         for( Map.Entry<Integer, String> entry: fileMap.entrySet() ) {
             int speciesTypeKey = entry.getKey();

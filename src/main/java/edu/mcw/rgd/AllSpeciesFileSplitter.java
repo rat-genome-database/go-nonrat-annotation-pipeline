@@ -17,6 +17,7 @@ public class AllSpeciesFileSplitter {
 
     String dir = "data/allSpecies";
     String fname = "goa_uniprot_all.gaf.gz";
+    String fnameRgd = "goa_uniprot_rgd.gaf.gz";
 
     public String downloadIfNew(String srcFile) throws Exception {
 
@@ -25,7 +26,7 @@ public class AllSpeciesFileSplitter {
 
         FileDownloader fd = new FileDownloader();
         fd.setExternalFile(srcFile);
-        fd.setLocalFile(dir+"/goa_uniprot_all.gaf.gz");
+        fd.setLocalFile(dir+"/"+fname);
         fd.setPrependDateStamp(true);
         String localFile = fd.downloadNew();
         String localFileFullPath = new File(localFile).getAbsolutePath();
@@ -96,7 +97,8 @@ public class AllSpeciesFileSplitter {
                 String fname = dir + "/" + dateAsString + species + ".gaf.gz";
                 resultMap.put(speciesTypeKey, fname);
 
-                if( new File(fname).exists() ) {
+                File file = new File(fname);
+                if( file.exists() && file.length()>1000000 ) {
                     fileMap.put(taxonId+"", null);
                 } else {
                     BufferedWriter out = Utils.openWriter(fname);
@@ -137,5 +139,22 @@ public class AllSpeciesFileSplitter {
                 w.close();
         }
         return resultMap;
+    }
+
+    /// read GAF file for all species in universe
+    /// copy to output file only the lines with species that are supported in RGD
+    public String filterRgdSpecies( String fileName ) throws Exception {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String dateAsString = sdf.format(new java.util.Date())+"_";
+        String outFileName = dir + "/" + dateAsString + fnameRgd;
+
+        // see if the output file is already there
+        File file = new File(outFileName);
+        if( !file.exists() || file.length()<1000000 ) {
+            GoaFileSplitter.run(fileName, outFileName);
+        }
+
+        return outFileName;
     }
 }
