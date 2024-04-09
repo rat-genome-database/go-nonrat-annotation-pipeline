@@ -116,7 +116,7 @@ public class GoNonratAnnotationPipeline {
         logStatus.info("evidence codes not used to make rat annotations: "
                 +Utils.concatenate(MAHQC.wrongEvidenceCounts.keySet(), ", ", "\'"));
 
-        int originalIsoAnnotCount = refCounts.get(getIsoRefRgdId()+"0");
+        int originalIsoAnnotCount = refCounts.get(getIsoRefRgdId()+"|"+0);
         deleteObsoleteIsoAnnotationsForRat(originalIsoAnnotCount);
 
         // show current counts
