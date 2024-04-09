@@ -116,7 +116,8 @@ public class GoNonratAnnotationPipeline {
         logStatus.info("evidence codes not used to make rat annotations: "
                 +Utils.concatenate(MAHQC.wrongEvidenceCounts.keySet(), ", ", "\'"));
 
-        deleteObsoleteIsoAnnotationsForRat();
+        int originalIsoAnnotCount = refCounts.get(getIsoRefRgdId()+"0");
+        deleteObsoleteIsoAnnotationsForRat(originalIsoAnnotCount);
 
         // show current counts
         dumpCountsForRefRgdIds(refCounts);
@@ -302,16 +303,14 @@ public class GoNonratAnnotationPipeline {
     }
 
 
-    void deleteObsoleteIsoAnnotationsForRat() throws Exception {
+    void deleteObsoleteIsoAnnotationsForRat( int originalIsoAnnotCount ) throws Exception {
 
         int speciesTypeKey = SpeciesType.RAT;
         String speciesName = SpeciesType.getCommonName(speciesTypeKey);
-        int refRgdId = getIsoRefRgdId();
-
-        int count0 = dao.getCountOfAnnotationsByReferenceAndSpecies(refRgdId, speciesTypeKey);
 
         // delete annotations not updated/inserted by the pipeline
-        int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), staleAnnotCutoffDate, logStatus, getStaleAnnotDeleteThreshold(), refRgdId, count0, speciesTypeKey);
+        int annotsDeleted = dao.deleteAnnotations(getCreatedBy(), staleAnnotCutoffDate, logStatus, getStaleAnnotDeleteThreshold(),
+                getIsoRefRgdId(), originalIsoAnnotCount, speciesTypeKey);
         if( annotsDeleted!=0 ) {
             logStatus.info(annotsDeleted + " " + speciesName + " STALE ANNOTATIONS DELETED");
         }

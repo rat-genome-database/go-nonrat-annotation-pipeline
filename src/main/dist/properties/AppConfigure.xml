@@ -1,7 +1,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.GoNonratAnnotationPipeline">
-        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Apr 08, 2024" />
+        <property name="version" value="GO Non-Rat Annotation Pipeline   -- build Apr 09, 2024" />
         <property name="localDir" value="data"/>
 
         <property name="mgiFiles">
@@ -13,6 +13,7 @@
         <property name="goaMouseDbSources">
             <list>
                 <value>MGI</value>
+                <value>UniProtKB</value>
             </list>
         </property>
 
