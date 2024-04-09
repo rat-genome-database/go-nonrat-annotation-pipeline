@@ -214,6 +214,7 @@ public class DAO  {
 
             logStatus.warn(" STALE ANNOTATIONS DELETE THRESHOLD ("+deleteThresholdStr+") -- "+annotsForDeleteThreshold);
             logStatus.warn(" STALE ANNOTATIONS TAGGED FOR DELETE     -- "+annotsForDeleteCount);
+            logStatus.warn("   INITIAL ANNOT COUNT="+initialAnnotCount+", NEW ANNOT COUNT="+newAnnotCount);
             logStatus.warn(" STALE ANNOTATIONS DELETE THRESHOLD ("+deleteThresholdStr+") EXCEEDED -- no annotations deleted");
             return 0;
         }
