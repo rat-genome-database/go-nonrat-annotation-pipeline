@@ -141,7 +141,7 @@ public class GoNonratAnnotationPipeline {
         // randomize incoming records to minimize risk of conflicts
         Collections.shuffle(records);
 
-        logStatus.info("   qc starts for "+records.size()+" incoming lines");
+        logStatus.info("   qc starts for "+Utils.formatThousands(records.size())+" incoming lines");
         records.parallelStream().forEach( rec -> {
 
             try {
@@ -151,10 +151,10 @@ public class GoNonratAnnotationPipeline {
             }
         });
 
-        logStatus.info("   WITH_INFO consolidation starts...");
+        logStatus.debug("   WITH_INFO consolidation starts...");
         WithInfoConsolidator.run(records, counters);
 
-        logStatus.info("   dl starts for "+records.size()+" incoming lines");
+        logStatus.info("   dl starts for "+Utils.formatThousands(records.size())+" incoming lines");
         records.parallelStream().forEach( rec -> {
 
             try {
