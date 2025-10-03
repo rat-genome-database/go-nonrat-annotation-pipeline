@@ -178,7 +178,11 @@ public class DAO  {
     }
 
     public int updateAnnotEx(int key, String notes, String annotExt, String geneProductFormId, Date origCreatedDate) throws Exception {
-        String sql = "UPDATE full_annot SET notes=?,annotation_extension=?,gene_product_form_id=?,original_created_date=?,last_modified_date=SYSDATE WHERE full_annot_key=?";
+        String sql = """
+            UPDATE full_annot
+            SET notes=?,annotation_extension=?,gene_product_form_id=?,original_created_date=?,last_modified_date=SYSDATE
+            WHERE full_annot_key=?
+            """;
         return annotationDAO.update(sql, notes, annotExt, geneProductFormId, origCreatedDate, key);
     }
 
@@ -254,8 +258,12 @@ public class DAO  {
     }
 
     public List<Annotation> getManualGoAnnotsForChinchilla() throws Exception {
-        String sql = "SELECT * FROM full_annot WHERE created_by NOT IN(67,192) AND term_acc LIKE 'GO:%' AND "+
-            "EXISTS( SELECT 1 FROM rgd_ids r WHERE annotated_object_rgd_id=rgd_id AND object_status='ACTIVE' AND species_type_key=4)";
+        String sql = """
+            SELECT * FROM full_annot
+            WHERE created_by NOT IN(67,192)
+              AND term_acc LIKE 'GO:%'
+              AND EXISTS( SELECT 1 FROM rgd_ids r WHERE annotated_object_rgd_id=rgd_id AND object_status='ACTIVE' AND species_type_key=4)
+            """;
         return annotationDAO.executeAnnotationQuery(sql);
     }
 
