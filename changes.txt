@@ -1,3 +1,6 @@
+Oct 23, 2024
+  run.sh: fixed email recipients
+
 Oct 03, 2025
 Jul 07, 2025
 May 07, 2025
