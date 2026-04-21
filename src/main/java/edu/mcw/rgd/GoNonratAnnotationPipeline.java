@@ -3,6 +3,7 @@ package edu.mcw.rgd;
 import edu.mcw.rgd.datamodel.SpeciesType;
 import edu.mcw.rgd.process.CounterPool;
 import edu.mcw.rgd.process.FileDownloader;
+import edu.mcw.rgd.process.MemoryMonitor;
 import edu.mcw.rgd.process.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,6 +91,10 @@ public class GoNonratAnnotationPipeline {
     public void run() throws Exception{
 
         long startTime = System.currentTimeMillis();
+
+        MemoryMonitor memoryMonitor = new MemoryMonitor();
+        memoryMonitor.start();
+
         staleAnnotCutoffDate = addMinutesToDate(new Date(), -10);
 
         logStatus.info("   "+dao.getConnectionInfo());
@@ -121,6 +126,9 @@ public class GoNonratAnnotationPipeline {
 
         // show current counts
         dumpCountsForRefRgdIds(refCounts);
+
+        memoryMonitor.stop();
+        logStatus.info(memoryMonitor.getSummary());
 
         // show total elapsed time
         long endTime = System.currentTimeMillis();
