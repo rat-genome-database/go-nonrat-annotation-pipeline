@@ -1,3 +1,7 @@
+Apr 22, 2026
+  WITH_INFO splitting: handle singleton buckets and fragment overflow to avoid ORA-12899
+  updated dependencies
+
 Apr 21, 2026
   added memory usage monitoring; updated dependencies
 

@@ -8,6 +8,8 @@ import java.util.*;
 
 public class WithInfoConsolidator {
 
+    static final int MAX_WITH_INFO_LEN = 1700;
+
     static public void run(List<MAHRecord> records, CounterPool counters) {
 
         WithInfoConsolidator consolidator = new WithInfoConsolidator();
@@ -55,8 +57,12 @@ public class WithInfoConsolidator {
 
         annotMap.values().parallelStream().forEach( adList -> {
             try {
+                // singleton bucket with WITH_INFO already short enough: nothing to consolidate or split
                 if( adList.size()==1 ) {
-                    return;
+                    String wi = adList.get(0).incomingAnnot.getWithInfo();
+                    if( wi==null || wi.length()<=MAX_WITH_INFO_LEN ) {
+                        return;
+                    }
                 }
 
                 // merge WITH_INFO
@@ -89,22 +95,44 @@ public class WithInfoConsolidator {
         }
     }
 
-    int consolidateByMergeInfo( String mergedWithInfo, List<MAHAnnotData> adList ) {
+    int consolidateByMergeInfo( String mergedWithInfo, List<MAHAnnotData> adList ) throws CloneNotSupportedException {
 
-        final int MAX_WITH_INFO_LEN = 1700;
-
-        // set the merged WITH_INFO to first incoming entry/entries, and delete the rest
-        int adIndex = 0;
+        // break merged WITH_INFO into fragments, each <= MAX_WITH_INFO_LEN, preferring '|' boundaries
+        List<String> fragments = new ArrayList<>();
         while( mergedWithInfo.length()>MAX_WITH_INFO_LEN ) {
             int barPos = mergedWithInfo.lastIndexOf('|', MAX_WITH_INFO_LEN-1);
-            String mergedWithInfoFragment = mergedWithInfo.substring(0, barPos);
-            mergedWithInfo = mergedWithInfo.substring(barPos+1);
-            adList.get(adIndex++).incomingAnnot.setWithInfo(mergedWithInfoFragment);
+            if( barPos <= 0 ) {
+                // no '|' separator within the limit — hard-cut at MAX_WITH_INFO_LEN
+                fragments.add(mergedWithInfo.substring(0, MAX_WITH_INFO_LEN));
+                mergedWithInfo = mergedWithInfo.substring(MAX_WITH_INFO_LEN);
+            } else {
+                fragments.add(mergedWithInfo.substring(0, barPos));
+                mergedWithInfo = mergedWithInfo.substring(barPos+1);
+            }
         }
-        adList.get(adIndex).incomingAnnot.setWithInfo(mergedWithInfo);
+        fragments.add(mergedWithInfo);
 
+        // assign each fragment to a MAHAnnotData slot; clone & append when more slots are needed
+        for( int i=0; i<fragments.size(); i++ ) {
+            if( i >= adList.size() ) {
+                MAHAnnotData template = adList.get(0);
+                MAHAnnotData clone = new MAHAnnotData();
+                clone.incomingAnnot = (Annotation) template.incomingAnnot.clone();
+                clone.db = template.db;
+                clone.key = template.key;
+                clone.dbObjectId = template.dbObjectId;
+                clone.parentList = template.parentList;
+                synchronized (template.parentList) {
+                    template.parentList.add(clone);
+                }
+                adList.add(clone);
+            }
+            adList.get(i).incomingAnnot.setWithInfo(fragments.get(i));
+        }
+
+        // remove leftover adList entries (fewer fragments than slots)
         int deleteCount = 0;
-        for( int i=1+adIndex; i<adList.size(); i++ ) {
+        for( int i=fragments.size(); i<adList.size(); i++ ) {
             MAHAnnotData ad = adList.get(i);
             synchronized (ad.parentList) {
                 ad.parentList.remove(ad);
