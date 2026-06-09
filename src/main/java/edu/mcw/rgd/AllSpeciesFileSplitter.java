@@ -1,7 +1,7 @@
 package edu.mcw.rgd;
 
 import edu.mcw.rgd.datamodel.SpeciesType;
-import edu.mcw.rgd.process.FileDownloader;
+import edu.mcw.rgd.process.FileDownloader2;
 import edu.mcw.rgd.process.Utils;
 
 import java.io.BufferedReader;
@@ -24,7 +24,7 @@ public class AllSpeciesFileSplitter {
         // archival files ending with 'goa_uniprot_all.gaf.gz' sorted alphabetically
         List<String> arFiles = getListOfArchivalFiles();
 
-        FileDownloader fd = new FileDownloader();
+        FileDownloader2 fd = new FileDownloader2();
         fd.setExternalFile(srcFile);
         fd.setLocalFile(dir+"/"+fname);
         fd.setPrependDateStamp(true);

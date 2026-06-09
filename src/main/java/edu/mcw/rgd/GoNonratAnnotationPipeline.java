@@ -2,7 +2,7 @@ package edu.mcw.rgd;
 
 import edu.mcw.rgd.datamodel.SpeciesType;
 import edu.mcw.rgd.process.CounterPool;
-import edu.mcw.rgd.process.FileDownloader;
+import edu.mcw.rgd.process.FileDownloader2;
 import edu.mcw.rgd.process.MemoryMonitor;
 import edu.mcw.rgd.process.Utils;
 import org.apache.logging.log4j.LogManager;
@@ -331,7 +331,7 @@ public class GoNonratAnnotationPipeline {
             int lastSlashPos = file.lastIndexOf('/');
             String localFileName = getLocalDir() + file.substring(lastSlashPos);
 
-            FileDownloader downloader = new FileDownloader();
+            FileDownloader2 downloader = new FileDownloader2();
             downloader.setExternalFile(file);
             downloader.setLocalFile(localFileName);
             downloader.setPrependDateStamp(true);

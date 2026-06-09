@@ -1,7 +1,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.GoNonratAnnotationPipeline">
-        <property name="version" value="go-nonrat-annotation-pipeline   -- build Apr 22, 2026" />
+        <property name="version" value="go-nonrat-annotation-pipeline   -- build Jun 9, 2026" />
         <property name="localDir" value="data"/>
 
         <property name="mgiFiles">
@@ -17,7 +17,7 @@
             </list>
         </property>
 
-        <property name="goaAllSpeciesFile" value="ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz"/>
+        <property name="goaAllSpeciesFile" value="https://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz"/>
         <property name="goaAllSpeciesInRgdFile" value="uniprot_all_in_rgd.gaf.gz"/>
         <property name="goaAllSpeciesFileSources">
             <list>

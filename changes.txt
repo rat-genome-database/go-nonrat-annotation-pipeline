@@ -1,3 +1,6 @@
+Jun 9, 2026
+  migrated downloads to FileDownloader2 (GOA all-species file moved ftp -> https); removed unused commons-net/httpclient deps; updated dependencies
+
 Apr 22, 2026
   WITH_INFO splitting: handle singleton buckets and fragment overflow to avoid ORA-12899
   updated dependencies
