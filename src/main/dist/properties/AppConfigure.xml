@@ -1,13 +1,14 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
     <bean id="loader" class="edu.mcw.rgd.GoNonratAnnotationPipeline">
-        <property name="version" value="go-nonrat-annotation-pipeline   -- build Jun 9, 2026" />
+        <property name="version" value="go-nonrat-annotation-pipeline   -- build Jun 29, 2026" />
         <property name="localDir" value="data"/>
 
         <property name="mgiFiles">
             <list>
-           <!--     <value>http://www.informatics.jax.org/downloads/reports/gene_association.mgi.gz</value>-->
-                <value>https://current.geneontology.org/annotations/mgi.gaf.gz</value>
+                <!-- the flat .../annotations/mgi.gaf.gz alias is deprecated (unlisted, a release behind);
+                     use the maintained MOD file under .../annotations/gaf/ instead -->
+                <value>https://current.geneontology.org/annotations/gaf/MOUSE-mod.gaf.gz</value>
             </list>
         </property>
         <property name="goaMouseDbSources">

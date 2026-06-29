@@ -1,3 +1,6 @@
+Jun 29, 2026
+  mouse source file switched to the maintained gaf/MOUSE-mod.gaf.gz (the flat mgi.gaf.gz alias is deprecated); updated dependencies
+
 Jun 9, 2026
   migrated downloads to FileDownloader2 (GOA all-species file moved ftp -> https); removed unused commons-net/httpclient deps; updated dependencies
 
